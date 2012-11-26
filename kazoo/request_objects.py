@@ -65,3 +65,18 @@ class UsernamePasswordAuthRequest(KazooRequest):
         }
         return super(UsernamePasswordAuthRequest, self).execute(base_url, method="put", data=data)
 
+
+class ApiKeyAuthRequest(KazooRequest):
+
+    def __init__(self, api_key):
+        super(ApiKeyAuthRequest, self).__init__("/api_auth",
+                                                auth_required=False)
+        self.api_key = api_key
+
+    def execute(self, base_url):
+        data = {
+            "api_key": self.api_key
+        }
+        return super(ApiKeyAuthRequest, self).execute(base_url, data=data, method="put")
+
+

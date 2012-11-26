@@ -1,6 +1,7 @@
 import json
 from kazoo import exceptions
-from kazoo.request_objects import KazooRequest, UsernamePasswordAuthRequest
+from kazoo.request_objects import KazooRequest, UsernamePasswordAuthRequest, \
+        ApiKeyAuthRequest
 import mock
 import unittest
 
@@ -107,3 +108,28 @@ class UsernamePasswordAuthRequestTestCase(unittest.TestCase):
             self.req_obj.execute("http://testserver")
             mock_put.assert_called_with(mock.ANY, headers=mock.ANY,
                                         data=json.dumps(expected_data))
+
+
+class ApiKeyAuthRequestTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.api_key = "dsfjhasdfknasdfhas"
+        self.req_obj = ApiKeyAuthRequest(self.api_key)
+
+    def test_correct_url_hit(self):
+        with mock.patch('requests.put') as mock_put:
+            self.req_obj.execute("http://testserver")
+            mock_put.assert_called_with("http://testserver/api_auth",
+                                        headers=mock.ANY,
+                                        data=mock.ANY)
+
+    def test_correct_data_sent(self):
+        with mock.patch('requests.put') as mock_put:
+            self.req_obj.execute("http://testserver")
+            expected_data = {
+                "api_key": self.api_key
+            }
+            mock_put.assert_called_with(mock.ANY, headers=mock.ANY,
+                                        data=json.dumps(expected_data))
+
+
