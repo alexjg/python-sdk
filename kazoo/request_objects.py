@@ -1,3 +1,4 @@
+import base64
 import json
 from kazoo import exceptions
 import re
@@ -46,4 +47,21 @@ class KazooRequest(object):
         if data:
             return req_func(full_url, data=json.dumps(data), headers=headers)
         return req_func(full_url, headers=headers)
+
+
+class UsernamePasswordAuthRequest(KazooRequest):
+
+    def __init__(self, username, password):
+        super(UsernamePasswordAuthRequest, self).__init__("/user_auth",
+                                                          auth_required=False)
+        self.username = username
+        self.password = password
+
+    def execute(self, base_url):
+        encoded_password = base64.b64encode(self.password)
+        data = {
+            "credentials": encoded_password,
+            "Account Name": self.username
+        }
+        return super(UsernamePasswordAuthRequest, self).execute(base_url, method="put", data=data)
 

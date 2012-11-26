@@ -1,6 +1,6 @@
 import json
 from kazoo import exceptions
-from kazoo.request_objects import KazooRequest
+from kazoo.request_objects import KazooRequest, UsernamePasswordAuthRequest
 import mock
 import unittest
 
@@ -83,4 +83,27 @@ class RequestObjectDataParamsTestCase(unittest.TestCase):
 
 
 
+class UsernamePasswordAuthRequestTestCase(unittest.TestCase):
 
+    def setUp(self):
+        self.username = "username"
+        self.password = "password"
+        self.b64_password = "cGFzc3dvcmQ="
+        self.req_obj = UsernamePasswordAuthRequest(self.username, self.password)
+
+    def test_request_hits_correct_url(self):
+        with mock.patch("requests.put") as mock_put:
+            self.req_obj.execute("http://testserver")
+            mock_put.assert_called_with("http://testserver/user_auth",
+                                        headers=mock.ANY,
+                                        data=mock.ANY)
+
+    def test_request_sends_correct_data(self):
+        with mock.patch('requests.put') as mock_put:
+            expected_data = {
+                "credentials": self.b64_password,
+                "Account Name": self.username,
+            }
+            self.req_obj.execute("http://testserver")
+            mock_put.assert_called_with(mock.ANY, headers=mock.ANY,
+                                        data=json.dumps(expected_data))
