@@ -5,7 +5,19 @@ import kazoo.exceptions as exceptions
 class Client(object):
     BASE_URL = "http://api.2600hz.com:8000/v1"
 
-    def __init__(self, api_token):
+    class AuthenticationType(object):
+        CREDENTIALS = 'credentials'
+        TOKEN = 'token'
+
+    def __init__(self, api_token=None, password=None, account_name=None):
+        if password or account_name:
+            if not (password and account_name):
+                raise RuntimeError("If using account name/password "
+                                   "authentication then you must specify both "
+                                   "password and account_name arguments")
+        if not api_token and not password:
+            raise RuntimeError("You must pass either an api_token or an "
+                               "account name/password pair")
         self.api_token = api_token
         self._authenticated = False
         self.auth_token = None
@@ -38,4 +50,4 @@ class Client(object):
             self._authenticated = True
 
     def get_account(self, account_id):
-        return self._request("/accounts/{0}".format(account_id), "GET")
+        return self._request("/accounts/{0}".format(account_id), "get").json
