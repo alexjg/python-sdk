@@ -1,3 +1,4 @@
+import json
 from kazoo import exceptions
 from kazoo.request_objects import BaseRequest
 import mock
@@ -35,5 +36,20 @@ class RequestObjectParameterTestCase(unittest.TestCase):
         req_obj = TestRequestObject(self.url)
         with self.assertRaises(exceptions.InvalidHttpMethodError):
             req_obj.execute("https://testserver", param1="value", method="baha")
+
+
+class RequestObjectDataParamsTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.path = "/testpath/{param3}"
+
+    def test_data_sent_to_server(self):
+        req_obj = TestRequestObject(self.path)
+        with mock.patch('requests.get') as mock_get:
+            data_dict = {
+                "data1":"dataval1"
+            }
+            req_obj.execute("http://testserver", param3="someval", data=data_dict)
+            mock_get.assert_called_with(mock.ANY, data=json.dumps(data_dict))
 
 

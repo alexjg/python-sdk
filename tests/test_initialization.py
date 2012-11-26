@@ -16,8 +16,10 @@ class ConstructorRequiredArgumentsTestCase(unittest.TestCase):
             client = Client(password="somepassword")
 
     def test_with_token_does_not_raise(self):
-        client = Client(api_token="soemtoken")
+        client = Client(api_token="sometoken")
 
     def test_with_username_and_password_does_not_raise(self):
         client = Client(account_name="user", password="pass")
 
+    def test_with_username_and_password_creates_user_auth_request(self):
+        client = Client(account_name="user", password="pass")

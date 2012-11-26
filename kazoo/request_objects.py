@@ -1,3 +1,4 @@
+import json
 from kazoo import exceptions
 import re
 import requests
@@ -18,7 +19,7 @@ class BaseRequest(object):
         param_names = param_regex.findall(path)
         return param_names
 
-    def execute(self, base_url, method='get', **kwargs):
+    def execute(self, base_url, method='get', data=None, **kwargs):
         if method.lower() not in self.http_methods:
             raise exceptions.InvalidHttpMethodError("method {0} is not a valid"
                                                     " http method".format(
@@ -30,5 +31,7 @@ class BaseRequest(object):
         subbed_path = self.path.format(**kwargs)
         full_url = base_url + subbed_path
         req_func = getattr(requests, method)
+        if data:
+            return req_func(full_url, data=json.dumps(data))
         return req_func(full_url)
 
