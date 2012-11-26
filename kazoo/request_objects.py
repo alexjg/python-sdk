@@ -46,7 +46,7 @@ class KazooRequest(object):
         req_func = getattr(requests, method)
         if data:
             return req_func(full_url, data=json.dumps(data), headers=headers)
-        return req_func(full_url, headers=headers)
+        return req_func(full_url, headers=headers).json
 
 
 class UsernamePasswordAuthRequest(KazooRequest):

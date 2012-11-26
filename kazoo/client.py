@@ -47,11 +47,9 @@ class Client(object):
 
     def authenticate(self):
         if not self._authenticated:
-            resp = self.auth_token = self._request("/api_auth", "put",
-                                            params={"api_token": self.api_token},
-                                            require_auth=False)
-            self.auth_token = resp.json["auth_token"]
+            self.auth_token = self.auth_request.execute()["auth_token"]
             self._authenticated = True
+        return self.auth_token
 
     def get_account(self, account_id):
         return self._request("/accounts/{0}".format(account_id), "get").json
