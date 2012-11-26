@@ -47,7 +47,7 @@ class Client(object):
 
     def authenticate(self):
         if not self._authenticated:
-            self.auth_token = self.auth_request.execute()["auth_token"]
+            self.auth_token = self.auth_request.execute(self.BASE_URL)["auth_token"]
             self._authenticated = True
         return self.auth_token
 

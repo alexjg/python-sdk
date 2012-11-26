@@ -5,8 +5,16 @@ from kazoo.request_objects import KazooRequest, UsernamePasswordAuthRequest, \
 import mock
 import unittest
 
+class RequestTestCase(unittest.TestCase):
 
-class RequestObjectParameterTestCase(unittest.TestCase):
+    def assert_data(self, mock_request, expected_data):
+        expected_wrapper = {"data": expected_data}
+        mock_request.assert_called_with(mock.ANY, headers=mock.ANY,
+                                        data=json.dumps(expected_wrapper))
+
+
+
+class RequestObjectParameterTestCase(RequestTestCase):
 
     def setUp(self):
         self.param_name = "param1"
@@ -52,7 +60,7 @@ class RequestObjectParameterTestCase(unittest.TestCase):
             req_obj.execute("https://testserver", token="jfhasdfasd", param1="value3")
 
 
-class RequestObjectDataParamsTestCase(unittest.TestCase):
+class RequestObjectDataParamsTestCase(RequestTestCase):
 
     def setUp(self):
         self.path = "/testpath/{param3}"
@@ -64,8 +72,7 @@ class RequestObjectDataParamsTestCase(unittest.TestCase):
                 "data1":"dataval1"
             }
             req_obj.execute("http://testserver", param3="someval", data=data_dict)
-            mock_get.assert_called_with(mock.ANY, data=json.dumps(data_dict),
-                                        headers=mock.ANY)
+            self.assert_data(mock_get, data_dict)
 
     def test_data_sent_to_server_with_auth_if_required(self):
         req_obj = KazooRequest(self.path, auth_required=True)
@@ -84,7 +91,7 @@ class RequestObjectDataParamsTestCase(unittest.TestCase):
 
 
 
-class UsernamePasswordAuthRequestTestCase(unittest.TestCase):
+class UsernamePasswordAuthRequestTestCase(RequestTestCase):
 
     def setUp(self):
         self.username = "username"
@@ -106,11 +113,10 @@ class UsernamePasswordAuthRequestTestCase(unittest.TestCase):
                 "Account Name": self.username,
             }
             self.req_obj.execute("http://testserver")
-            mock_put.assert_called_with(mock.ANY, headers=mock.ANY,
-                                        data=json.dumps(expected_data))
+            self.assert_data(mock_put, expected_data)
 
 
-class ApiKeyAuthRequestTestCase(unittest.TestCase):
+class ApiKeyAuthRequestTestCase(RequestTestCase):
 
     def setUp(self):
         self.api_key = "dsfjhasdfknasdfhas"
@@ -129,7 +135,6 @@ class ApiKeyAuthRequestTestCase(unittest.TestCase):
             expected_data = {
                 "api_key": self.api_key
             }
-            mock_put.assert_called_with(mock.ANY, headers=mock.ANY,
-                                        data=json.dumps(expected_data))
+            self.assert_data(mock_put, expected_data)
 
 
