@@ -4,3 +4,6 @@ class InvalidConfigurationError(RuntimeError):
 
 class InvalidHttpMethodError(ValueError):
     pass
+
+class AuthenticationRequiredError(RuntimeError):
+    pass
