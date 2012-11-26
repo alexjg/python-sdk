@@ -1,0 +1,3 @@
+
+class InvalidConfigurationError(RuntimeError):
+    pass
