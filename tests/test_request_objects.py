@@ -1,11 +1,8 @@
 import json
 from kazoo import exceptions
-from kazoo.request_objects import BaseRequest
+from kazoo.request_objects import KazooRequest
 import mock
 import unittest
-
-class TestRequestObject(BaseRequest):
-    pass
 
 
 class RequestObjectParameterTestCase(unittest.TestCase):
@@ -15,7 +12,7 @@ class RequestObjectParameterTestCase(unittest.TestCase):
         self.url = "/testpath/{{{0}}}".format(self.param_name)
 
     def create_req_obj(self, url, auth_required=False):
-        return TestRequestObject(url, auth_required=auth_required)
+        return KazooRequest(url, auth_required=auth_required)
 
     def test_execute_requires_param(self):
         req_obj = self.create_req_obj(self.url)
@@ -60,7 +57,7 @@ class RequestObjectDataParamsTestCase(unittest.TestCase):
         self.path = "/testpath/{param3}"
 
     def test_data_sent_to_server(self):
-        req_obj = TestRequestObject(self.path, auth_required=False)
+        req_obj = KazooRequest(self.path, auth_required=False)
         with mock.patch('requests.get') as mock_get:
             data_dict = {
                 "data1":"dataval1"
@@ -70,7 +67,7 @@ class RequestObjectDataParamsTestCase(unittest.TestCase):
                                         headers=mock.ANY)
 
     def test_data_sent_to_server_with_auth_if_required(self):
-        req_obj = TestRequestObject(self.path, auth_required=True)
+        req_obj = KazooRequest(self.path, auth_required=True)
         with mock.patch('requests.post') as mock_post:
             data_dict = {
                 "data1":"dataval1"

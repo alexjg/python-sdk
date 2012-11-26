@@ -3,7 +3,7 @@ from kazoo import exceptions
 import re
 import requests
 
-class BaseRequest(object):
+class KazooRequest(object):
     http_methods = ["get", "post", "put", "delete"]
 
     def __init__(self, path, auth_required=True):
