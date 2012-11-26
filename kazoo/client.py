@@ -1,24 +1,28 @@
 import json
 import requests
 import kazoo.exceptions as exceptions
+from kazoo.request_objects import KazooRequest, UsernamePasswordAuthRequest, \
+        ApiKeyAuthRequest
 
 class Client(object):
     BASE_URL = "http://api.2600hz.com:8000/v1"
 
-    class AuthenticationType(object):
-        CREDENTIALS = 'credentials'
-        TOKEN = 'token'
 
-    def __init__(self, api_token=None, password=None, account_name=None):
+    def __init__(self, api_key=None, password=None, account_name=None):
+        if not api_key and not password:
+            raise RuntimeError("You must pass either an api_key or an "
+                               "account name/password pair")
+
         if password or account_name:
             if not (password and account_name):
                 raise RuntimeError("If using account name/password "
                                    "authentication then you must specify both "
                                    "password and account_name arguments")
-        if not api_token and not password:
-            raise RuntimeError("You must pass either an api_token or an "
-                               "account name/password pair")
-        self.api_token = api_token
+            self.auth_request = UsernamePasswordAuthRequest(account_name, password)
+        else:
+            self.auth_request = ApiKeyAuthRequest(api_key)
+
+        self.api_key = api_key
         self._authenticated = False
         self.auth_token = None
 
