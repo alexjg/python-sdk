@@ -4,6 +4,7 @@ from kazoo.request_objects import KazooRequest, UsernamePasswordAuthRequest, \
         ApiKeyAuthRequest
 import mock
 import unittest
+from tests import utils
 
 class RequestTestCase(unittest.TestCase):
 
@@ -31,7 +32,7 @@ class RequestObjectParameterTestCase(RequestTestCase):
     def test_url_contains_param(self):
         req_obj = self.create_req_obj(self.url)
         with mock.patch('requests.get') as mock_get:
-            mock_get.return_value.json = {"some_key": "some_val"}
+            mock_get.return_value.json = {"some_key": "some_val", "status": "success"}
             req_obj.execute("http://testserver", param1="somevalue")
             mock_get.assert_called_with("http://testserver/testpath/somevalue",
                                         headers=mock.ANY)
@@ -90,6 +91,23 @@ class RequestObjectDataParamsTestCase(RequestTestCase):
             mock_post.assert_called_with(mock.ANY, headers=expected_headers)
 
 
+class RequestObjectErrorHandling(RequestTestCase):
+
+    def setUp(self):
+        self.error_response = json.loads(utils.load_fixture("bad_auth_response.json"))
+
+    def test_kazoo_api_error_raised_on_error_response(self):
+        req_obj = KazooRequest("/somepath", auth_required=False)
+        with mock.patch('requests.get') as mock_get:
+            mock_response = mock.Mock()
+            mock_response.json = self.error_response
+            mock_get.return_value = mock_response
+            with self.assertRaises(exceptions.KazooApiError) as cm:
+                req_obj.execute("http://testserver")
+            self.assertEqual(cm.exception.message,
+                             self.error_response["message"])
+
+
 
 class UsernamePasswordAuthRequestTestCase(RequestTestCase):
 
@@ -110,7 +128,7 @@ class UsernamePasswordAuthRequestTestCase(RequestTestCase):
         with mock.patch('requests.put') as mock_put:
             expected_data = {
                 "credentials": self.b64_password,
-                "Account Name": self.username,
+                "account_name": self.username,
             }
             self.req_obj.execute("http://testserver")
             self.assert_data(mock_put, expected_data)

@@ -1,0 +1,8 @@
+{
+    "status": "error",
+    "auth_token": "",
+    "error": "401",
+    "request_id": "1416cff416227360b706a3648a159641",
+    "message": "invalid credentials",
+    "data": []
+}

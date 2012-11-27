@@ -7,3 +7,6 @@ class InvalidHttpMethodError(ValueError):
 
 class AuthenticationRequiredError(RuntimeError):
     pass
+
+class KazooApiError(RuntimeError):
+    pass

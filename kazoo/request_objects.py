@@ -45,8 +45,12 @@ class KazooRequest(object):
         headers = self._get_headers(token=token)
         req_func = getattr(requests, method)
         if data:
-            return req_func(full_url, data=json.dumps({"data": data}), headers=headers).json
-        return req_func(full_url, headers=headers).json
+            response = req_func(full_url, data=json.dumps({"data": data}), headers=headers)
+        else:
+            response = req_func(full_url, headers=headers).json
+        if response["status"] == "error":
+            raise exceptions.KazooApiError(response["message"])
+        return response
 
 
 class UsernamePasswordAuthRequest(KazooRequest):
@@ -61,7 +65,7 @@ class UsernamePasswordAuthRequest(KazooRequest):
         encoded_password = base64.b64encode(self.password)
         data = {
             "credentials": encoded_password,
-            "Account Name": self.username
+            "account_name": self.username
         }
         return super(UsernamePasswordAuthRequest, self).execute(base_url, method="put", data=data)
 
