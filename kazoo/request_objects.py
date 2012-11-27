@@ -1,6 +1,7 @@
 import base64
 import json
 from kazoo import exceptions
+import hashlib
 import re
 import requests
 
@@ -55,19 +56,24 @@ class KazooRequest(object):
 
 class UsernamePasswordAuthRequest(KazooRequest):
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, account_name):
         super(UsernamePasswordAuthRequest, self).__init__("/user_auth",
                                                           auth_required=False)
         self.username = username
         self.password = password
+        self.account_name = account_name
 
     def execute(self, base_url):
-        encoded_password = base64.b64encode(self.password)
         data = {
-            "credentials": encoded_password,
-            "account_name": self.username
+            "credentials": self._get_hashed_credentials(),
+            "account_name": self.account_name,
         }
         return super(UsernamePasswordAuthRequest, self).execute(base_url, method="put", data=data)
+
+    def _get_hashed_credentials(self):
+        m = hashlib.md5()
+        m.update("{0}:{1}".format(self.username, self.password))
+        return m.hexdigest()
 
 
 class ApiKeyAuthRequest(KazooRequest):

@@ -114,8 +114,9 @@ class UsernamePasswordAuthRequestTestCase(RequestTestCase):
     def setUp(self):
         self.username = "username"
         self.password = "password"
-        self.b64_password = "cGFzc3dvcmQ="
-        self.req_obj = UsernamePasswordAuthRequest(self.username, self.password)
+        self.account_name = "Account Name"
+        self.hashed_credentials = "133e1b8eda335c4c7f7a508620ca7f10"
+        self.req_obj = UsernamePasswordAuthRequest(self.username, self.password, self.account_name)
 
     def test_request_hits_correct_url(self):
         with mock.patch("requests.put") as mock_put:
@@ -127,8 +128,8 @@ class UsernamePasswordAuthRequestTestCase(RequestTestCase):
     def test_request_sends_correct_data(self):
         with mock.patch('requests.put') as mock_put:
             expected_data = {
-                "credentials": self.b64_password,
-                "account_name": self.username,
+                "credentials": self.hashed_credentials,
+                "account_name": self.account_name,
             }
             self.req_obj.execute("http://testserver")
             self.assert_data(mock_put, expected_data)

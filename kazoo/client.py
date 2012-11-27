@@ -8,17 +8,17 @@ class Client(object):
     BASE_URL = "http://api.2600hz.com:8000/v1"
 
 
-    def __init__(self, api_key=None, password=None, account_name=None):
+    def __init__(self, api_key=None, password=None, account_name=None, username=None):
         if not api_key and not password:
             raise RuntimeError("You must pass either an api_key or an "
                                "account name/password pair")
 
-        if password or account_name:
-            if not (password and account_name):
+        if password or account_name or username:
+            if not (password and account_name and username):
                 raise RuntimeError("If using account name/password "
-                                   "authentication then you must specify both "
-                                   "password and account_name arguments")
-            self.auth_request = UsernamePasswordAuthRequest(account_name, password)
+                                   "authentication then you must specify "
+                                   "password, userame and account_name arguments")
+            self.auth_request = UsernamePasswordAuthRequest(username, password, account_name)
         else:
             self.auth_request = ApiKeyAuthRequest(api_key)
 
