@@ -26,25 +26,6 @@ class Client(object):
         self._authenticated = False
         self.auth_token = None
 
-    def _request(self, path, method, params=None,
-                 require_auth=True):
-        if require_auth and not self._authenticated:
-            raise exceptions.InvalidConfigurationError("The client is not "
-                                                       "authenticated, please "
-                                                       "call client.authenticate")
-        url = self.BASE_URL + path
-        if params:
-            data = json.dumps({"data": params})
-        else:
-            data = None
-        headers = {
-            "Content-Type": "application/json",
-            "User-Agent": "kazoo python SDK",
-        }
-        req_func = getattr(requests, method)
-        response = req_func(url, data=data, headers=headers)
-        return response
-
     def authenticate(self):
         if not self._authenticated:
             self.auth_token = self.auth_request.execute(self.BASE_URL)["auth_token"]
@@ -52,4 +33,5 @@ class Client(object):
         return self.auth_token
 
     def get_account(self, account_id):
-        return self._request("/accounts/{0}".format(account_id), "get").json
+        get_account_request = KazooRequest("/accounts/{account_id}")
+        return get_account_request.execute(self.BASE_URL, account_id=account_id, token=self.auth_token)
