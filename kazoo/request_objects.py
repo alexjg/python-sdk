@@ -45,7 +45,7 @@ class KazooRequest(object):
         headers = self._get_headers(token=token)
         req_func = getattr(requests, method)
         if data:
-            response = req_func(full_url, data=json.dumps({"data": data}), headers=headers)
+            response = req_func(full_url, data=json.dumps({"data": data}), headers=headers).json
         else:
             response = req_func(full_url, headers=headers).json
         if response["status"] == "error":
