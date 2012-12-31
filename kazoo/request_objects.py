@@ -46,9 +46,12 @@ class KazooRequest(object):
         headers = self._get_headers(token=token)
         req_func = getattr(requests, method)
         if data:
-            response = req_func(full_url, data=json.dumps({"data": data}), headers=headers).json
+            raw_response = req_func(full_url, data=json.dumps({"data": data}), headers=headers)
         else:
-            response = req_func(full_url, headers=headers).json
+            raw_response = req_func(full_url, headers=headers)
+        if raw_response.status_code == 500:
+            raise exceptions.KazooApiError("Internal Server Error")
+        response = raw_response.json
         if response["status"] == "error":
             raise exceptions.KazooApiError(response["message"])
         return response

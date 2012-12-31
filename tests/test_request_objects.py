@@ -107,6 +107,15 @@ class RequestObjectErrorHandling(RequestTestCase):
             self.assertEqual(cm.exception.message,
                              self.error_response["message"])
 
+    def test_internal_server_error(self):
+        req_obj = KazooRequest("/somepath", auth_required=False)
+        with mock.patch('requests.get') as mock_get:
+            mock_response = mock.Mock()
+            mock_response.status_code = 500
+            mock_get.return_value = mock_response
+            with self.assertRaises(exceptions.KazooApiError) as cm:
+                req_obj.execute("http://testserver")
+
 
 
 class UsernamePasswordAuthRequestTestCase(RequestTestCase):
