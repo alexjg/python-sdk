@@ -38,27 +38,26 @@ class Client(object):
         return self.auth_token
 
     def _execute_request(self, request, **kwargs):
+        if request.auth_required:
+            kwargs["token"] = self.auth_token
         return request.execute(self.BASE_URL, **kwargs)
 
     def get_account(self, account_id):
         get_account_request = KazooRequest("/accounts/{account_id}")
-        return get_account_request.execute(self.BASE_URL,
-                                           account_id=account_id,
-                                           token=self.auth_token)
+        return self._execute_request(get_account_request,
+                                     account_id=account_id)
 
     def update_account(self, account_id, **kwargs):
         """Update the account"""
         update_account_request = KazooRequest("/accounts/{account_id}")
-        return update_account_request.execute(self.BASE_URL,
-                                              account_id=account_id,
-                                              token=self.auth_token,
-                                              method="post",
-                                              data=kwargs)
+        return self._execute_request(update_account_request,
+                                     account_id=account_id,
+                                     method='post',
+                                     data=kwargs)
 
     def delete_account(self, account_id):
         delete_account_request = KazooRequest("/accounts/{account_id}")
-        return delete_account_request.execute(self.BASE_URL,
-                                              account_id=account_id,
-                                              token=self.auth_token,
-                                              method="delete")
+        return self._execute_request(delete_account_request,
+                                     account_id=account_id,
+                                     method='delete')
 
