@@ -57,8 +57,16 @@ class KazooRequest(object):
             raise exceptions.KazooApiError("Internal Server Error")
         response = raw_response.json
         if response["status"] == "error":
-            raise exceptions.KazooApiError(response["message"])
+            logger.debug("There was an error, full error text is: {0}".format(
+                raw_response.content))
+            self._handle_error(response)
         return response
+
+    def _handle_error(self, error_data):
+        if error_data["error"] == "400" and ("data" in error_data):
+            raise exceptions.KazooApiBadDataError(error_data["data"])
+        raise exceptions.KazooApiError(error_data["message"])
+
 
 
 class UsernamePasswordAuthRequest(KazooRequest):

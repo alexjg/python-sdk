@@ -94,7 +94,7 @@ class RequestObjectDataParamsTestCase(RequestTestCase):
 class RequestObjectErrorHandling(RequestTestCase):
 
     def setUp(self):
-        self.error_response = json.loads(utils.load_fixture("bad_auth_response.json"))
+        self.error_response = utils.load_fixture_as_dict("bad_auth_response.json")
 
     def test_kazoo_api_error_raised_on_error_response(self):
         req_obj = KazooRequest("/somepath", auth_required=False)
@@ -115,6 +115,18 @@ class RequestObjectErrorHandling(RequestTestCase):
             mock_get.return_value = mock_response
             with self.assertRaises(exceptions.KazooApiError) as cm:
                 req_obj.execute("http://testserver")
+
+    def test_invalid_data_displays_invalid_field_data(self):
+        req_obj = KazooRequest("/somepath", auth_required=False)
+        with mock.patch('requests.get') as mock_get:
+            mock_response = mock.Mock()
+            mock_response.status_code = 400
+            mock_response.json = utils.load_fixture_as_dict(
+                "invalid_data_response.json")
+            mock_get.return_value = mock_response
+            with self.assertRaises(exceptions.KazooApiBadDataError) as cm:
+                req_obj.execute("http://testserver.com")
+            self.assertTrue("realm" in cm.exception.field_errors)
 
 
 

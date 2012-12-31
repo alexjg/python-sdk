@@ -49,4 +49,5 @@ class Client(object):
         return update_account_request.execute(self.BASE_URL,
                                               account_id=account_id,
                                               token=self.auth_token,
+                                              method="post",
                                               data=kwargs)

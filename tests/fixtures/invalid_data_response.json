@@ -1,0 +1,15 @@
+{
+    "status": "error", 
+    "auth_token": "", 
+    "request_id": "3608c006474491eb7243895c5019808f", 
+    "error": "400", 
+    "message": "invalid data", 
+    "data": {
+        "realm": {
+            "unique": "Account realm already in use"
+        }, 
+        "name": {
+            "required": "Field is required but missing"
+        }
+    }
+}
