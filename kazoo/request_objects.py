@@ -2,8 +2,11 @@ import base64
 import json
 from kazoo import exceptions
 import hashlib
+import logging
 import re
 import requests
+
+logger = logging.getLogger(__name__)
 
 class KazooRequest(object):
     http_methods = ["get", "post", "put", "delete"]
@@ -43,6 +46,7 @@ class KazooRequest(object):
                     param_name))
         subbed_path = self.path.format(**kwargs)
         full_url = base_url + subbed_path
+        logger.debug("Making request to url {0}".format(full_url.encode("utf-8")))
         headers = self._get_headers(token=token)
         req_func = getattr(requests, method)
         if data:
