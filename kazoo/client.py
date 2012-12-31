@@ -61,3 +61,31 @@ class Client(object):
                                      account_id=account_id,
                                      method='delete')
 
+    def get_callflows(self, account_id):
+        get_callflows_request = KazooRequest("/accounts/{account_id}/callflows")
+        return self._execute_request(get_callflows_request,
+                                     account_id=account_id)
+
+    def add_callflow(self, account_id, **kwargs):
+        add_callflow_req = KazooRequest("/accounts/{account_id}/callflows")
+        return self._execute_request(add_callflow_req,
+                                     account_id=account_id,
+                                     method="put",
+                                     data=kwargs)
+
+    def update_callflow(self, account_id, callflow_id, **kwargs):
+        update_callflow_req = KazooRequest("/accounts/{account_id}/callflows/{callflow_id}")
+        return self._execute_request(update_callflow_req,
+                                     account_id=account_id,
+                                     callflow_id=callflow_id,
+                                     data=kwargs,
+                                     method="post")
+
+    def delete_callflow(self, account_id, callflow_id):
+        delete_callflow_req = KazooRequest("/accounts/{account_id}/callflows/{callflow_id}")
+        return self._execute_request(delete_callflow_req,
+                                     account_id=account_id,
+                                     callflow_id=callflow_id,
+                                     method="delete")
+
+
