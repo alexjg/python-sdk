@@ -37,6 +37,9 @@ class Client(object):
             self._authenticated = True
         return self.auth_token
 
+    def _execute_request(self, request, **kwargs):
+        return request.execute(self.BASE_URL, **kwargs)
+
     def get_account(self, account_id):
         get_account_request = KazooRequest("/accounts/{account_id}")
         return get_account_request.execute(self.BASE_URL,
@@ -51,3 +54,11 @@ class Client(object):
                                               token=self.auth_token,
                                               method="post",
                                               data=kwargs)
+
+    def delete_account(self, account_id):
+        delete_account_request = KazooRequest("/accounts/{account_id}")
+        return delete_account_request.execute(self.BASE_URL,
+                                              account_id=account_id,
+                                              token=self.auth_token,
+                                              method="delete")
+
