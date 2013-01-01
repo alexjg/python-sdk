@@ -43,7 +43,7 @@ class RestResource(object):
             if hasattr(view_desc, "has_key"):
                 self.extra_views.append(view_desc)
             else:
-                self.extra_views.append({"name":view_desc,"path":view_desc})
+                self.extra_views.append({"name":"get_" + view_desc,"path":view_desc})
 
     def get_list_request(self, **kwargs):
         relative_path = self.path.format(**kwargs)

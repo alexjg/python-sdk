@@ -67,6 +67,7 @@ class ExtraViewsResourceTestCase(unittest.TestCase):
         for view_desc in self.resource.extra_views:
             if view_desc["name"] == "missing":
                 self.assertEqual(view_desc["path"], "missing")
+                self.assertEqual(view_desc["name"], "get_missing")
 
 
 
