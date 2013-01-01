@@ -68,7 +68,7 @@ class RestClientMetaClass(type):
         if request_type:
             get_request_string = "self.{0}.{1}({2})".format(resource_field_name, request_type, get_request_args)
         else:
-            get_request_string = "self.{0}.get_extra_view_request({1},{2})".format(resource_field_name, extra_view_name, get_request_args)
+            get_request_string = "self.{0}.get_extra_view_request(\"{1}\",{2})".format(resource_field_name, extra_view_name, get_request_args)
         if include_kwargs:
             func_definition = "def {0}(self, {1}, **kwargs): return self._execute_request({2}, data=kwargs)".format(
                 func_name, required_args_str, get_request_string)
@@ -91,7 +91,8 @@ class Client(object):
     _conference_resource = RestResource("conference",
                                        "/accounts/{account_id}/conferences/{conference_id}")
     _device_resource = RestResource("device",
-                                    "/accounts/{account_id}/devices/{device_id}")
+                                    "/accounts/{account_id}/devices/{device_id}",
+                                    extra_views=[{"name":"get_all_devices_status", "path":"status"}])
 
     def __init__(self, api_key=None, password=None, account_name=None,
                  username=None):
