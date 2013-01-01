@@ -4,9 +4,17 @@ import kazoo.exceptions as exceptions
 from kazoo.request_objects import KazooRequest, UsernamePasswordAuthRequest, \
         ApiKeyAuthRequest
 
+class RestClientMetaClass(type):
+
+    def __init__(cls, name, bases, dct):
+        super(RestClientMetaclass, cls).__init__(name, bases, dct)
+        for key, value in dct.items():
+            if hasattr(value, "verbose_name"):
+                cls._add_resource_methods(value, dct)
+
+
 class Client(object):
     BASE_URL = "http://api.2600hz.com:8000/v1"
-
 
     def __init__(self, api_key=None, password=None, account_name=None,
                  username=None):
