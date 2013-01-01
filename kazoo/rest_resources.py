@@ -34,6 +34,10 @@ class RestResource(object):
         relative_path = self.path.format(**kwargs)
         return KazooRequest(relative_path)
 
+    def get_object_request(self, **kwargs):
+        object_id = kwargs[self.object_arg]
+        return KazooRequest(self.path.format(**kwargs) + "/" + str(object_id))
+
 
     @property
     def plural_name(self):

@@ -28,3 +28,11 @@ class RestResourceTestCase(unittest.TestCase):
     def test_resource_list_method_hits_correct_url(self):
         request = self.resource.get_list_request(argument1=1)
         self.assertEqual(request.path, "/1/subresource")
+
+    def test_resource_individual_method_hits_correct_url(self):
+        request = self.resource.get_object_request(argument1=1, argument2=2)
+        self.assertEqual(request.path, "/1/subresource/2")
+
+    def test_resource_list_method_without_required_args_throws(self):
+        with self.assertRaises(ValueError):
+            request = self.resource.get_list_request(argument3=3)
