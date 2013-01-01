@@ -51,12 +51,23 @@ class ExtraViewsResourceTestCase(unittest.TestCase):
         self.resource = RestResource(
             "somresource",
             "/{id1}/somesubresource/{id2}",
-            extra_views = ["status", "missing"]
+            extra_views = [{"path":"status", "name": "all_devices_status"}, "missing"]
         )
 
     def test_extra_view_returns_correct_url(self):
         request = self.resource.get_extra_view_request("status", id1=1)
         self.assertEqual(request.path, "/1/somesubresource/status")
+
+    def test_extra_views_described_by_dictionary(self):
+        for view_desc in self.resource.extra_views:
+            if view_desc["name"] == "all_devices_status":
+                self.assertEqual(view_desc["path"], "status")
+
+    def test_extra_views_described_by_string(self):
+        for view_desc in self.resource.extra_views:
+            if view_desc["name"] == "missing":
+                self.assertEqual(view_desc["path"], "missing")
+
 
 
 class PluralNameResourceTestCase(unittest.TestCase):

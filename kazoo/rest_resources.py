@@ -11,7 +11,7 @@ class RestResource(object):
         self.required_args = self._get_required_arguments(path)
         self.object_arg = self._get_object_argument(path)
         self.path = self._get_resource_path(path)
-        self.extra_views = extra_views
+        self._initialize_extra_view_descriptions(extra_views)
 
     def _get_resource_path(self, path):
         return path[:path.find(self.object_arg) - 2]
@@ -36,6 +36,14 @@ class RestResource(object):
     def _get_full_url(self, params):
         object_id = params[self.object_arg]
         return self.path.format(**params) + "/{0}".format(object_id)
+
+    def _initialize_extra_view_descriptions(self, view_descs):
+        self.extra_views = []
+        for view_desc in view_descs:
+            if hasattr(view_desc, "has_key"):
+                self.extra_views.append(view_desc)
+            else:
+                self.extra_views.append({"name":view_desc,"path":view_desc})
 
     def get_list_request(self, **kwargs):
         relative_path = self.path.format(**kwargs)
