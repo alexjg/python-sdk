@@ -21,8 +21,8 @@ class RequestObjectParameterTestCase(RequestTestCase):
         self.param_name = "param1"
         self.url = "/testpath/{{{0}}}".format(self.param_name)
 
-    def create_req_obj(self, url, auth_required=False):
-        return KazooRequest(url, auth_required=auth_required)
+    def create_req_obj(self, url, auth_required=False, method='get'):
+        return KazooRequest(url, auth_required=auth_required, method=method)
 
     def test_execute_requires_param(self):
         req_obj = self.create_req_obj(self.url)
@@ -41,6 +41,13 @@ class RequestObjectParameterTestCase(RequestTestCase):
         req_obj = self.create_req_obj(self.url)
         with mock.patch('requests.get') as mock_get, mock.patch('requests.post') as mock_post:
             req_obj.execute("http://testserver", param1="value", method="post")
+            mock_post.assert_called_with("http://testserver/testpath/value",
+                                         headers=mock.ANY)
+
+    def test_request_method_used_from_constructor_if_no_arg(self):
+        req_obj = self.create_req_obj(self.url, method='post')
+        with mock.patch('requests.get') as mock_get, mock.patch('requests.post') as mock_post:
+            req_obj.execute("http://testserver", param1="value")
             mock_post.assert_called_with("http://testserver/testpath/value",
                                          headers=mock.ANY)
 

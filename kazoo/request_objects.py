@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class KazooRequest(object):
     http_methods = ["get", "post", "put", "delete"]
 
-    def __init__(self, path, auth_required=True):
+    def __init__(self, path, auth_required=True, method='get'):
         """An object which takes a path and determines required
         parameters from it, these parameters must be passed to the execute
         method of the object
@@ -19,6 +19,7 @@ class KazooRequest(object):
         self.path = path
         self._required_param_names = self._get_params_from_path(self.path)
         self.auth_required = auth_required
+        self.method = method
 
     def _get_params_from_path(self, path):
         param_regex = re.compile("{([a-zA-Z0-9_]+)}")
@@ -32,10 +33,12 @@ class KazooRequest(object):
         return headers
 
 
-    def execute(self, base_url, method='get', data=None, token=None, **kwargs):
+    def execute(self, base_url, method=None, data=None, token=None, **kwargs):
         if self.auth_required and token is None:
             raise exceptions.AuthenticationRequiredError("This method requires "
                                                          "an auth token")
+        if method is None:
+            method = self.method
         if method.lower() not in self.http_methods:
             raise exceptions.InvalidHttpMethodError("method {0} is not a valid"
                                                     " http method".format(
