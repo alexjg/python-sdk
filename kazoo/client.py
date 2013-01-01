@@ -77,6 +77,8 @@ class Client(object):
 
     _conference_resource = RestResource("conference",
                                        "/accounts/{account_id}/conferences/{conference_id}")
+    _device_resource = RestResource("device",
+                                    "/accounts/{account_id}/devices/{device_id}")
 
     def __init__(self, api_key=None, password=None, account_name=None,
                  username=None):

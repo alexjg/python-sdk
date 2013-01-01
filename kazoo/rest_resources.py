@@ -3,9 +3,10 @@ import re
 
 class RestResource(object):
 
-    def __init__(self, name, path):
+    def __init__(self, name, path, plural_name=None):
         self._param_regex = re.compile("{([a-zA-Z0-9_]+)}")
         self.name = name
+        self._plural_name = plural_name
         self._check_at_least_one_argument(path)
         self.required_args = self._get_required_arguments(path)
         self.object_arg = self._get_object_argument(path)
@@ -52,4 +53,6 @@ class RestResource(object):
 
     @property
     def plural_name(self):
+        if self._plural_name:
+            return self._plural_name
         return self.name + "s"

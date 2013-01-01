@@ -19,9 +19,6 @@ class RestResourceTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             resource = RestResource("somename", "/blahblah/blah")
 
-    def test_resource_plural_name(self):
-        self.assertEqual(self.resource.plural_name, "subresources")
-
     def test_resource_path_correctly_calculated(self):
         self.assertEqual(self.resource.path, "/{argument1}/subresource")
 
@@ -47,4 +44,18 @@ class RestResourceTestCase(unittest.TestCase):
         request = self.resource.get_create_object_request(argument1=1)
         self.assertEqual(request.path, "/1/subresource")
         self.assertEqual(request.method, 'put')
+
+class PluralNameResourceTestCase(unittest.TestCase):
+
+    def test_resource_plural_name(self):
+        resource = RestResource("subresource", "/{oneid}/someotherplace")
+        self.assertEqual(resource.plural_name, "subresources")
+
+    def test_if_plural_name_set_in_constructor_then_use_that(self):
+        resource = RestResource("subresource", "/{oneid}/someotherplace",
+                                plural_name="subresourcae")
+        self.assertEqual(resource.plural_name, "subresourcae")
+
+
+
 
