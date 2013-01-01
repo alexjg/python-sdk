@@ -3,6 +3,7 @@ import requests
 import kazoo.exceptions as exceptions
 from kazoo.request_objects import KazooRequest, UsernamePasswordAuthRequest, \
         ApiKeyAuthRequest
+from kazoo.rest_resources import RestResource
 
 class RestClientMetaClass(type):
 
@@ -22,7 +23,7 @@ class RestClientMetaClass(type):
     def _generate_create_object_func(cls, resource_field_name, rest_resource):
         func_name = "create_{0}".format(rest_resource.name)
         required_args = rest_resource.required_args
-        func = cls._generate_resource_func(func_name, resource_field_name, required_args, 'create_object_request', include_kwargs=True)
+        func = cls._generate_resource_func(func_name, resource_field_name, required_args, 'get_create_object_request', include_kwargs=True)
         setattr(cls, func_name, func)
 
     def _generate_list_func(cls, resource_field_name, rest_resource):
@@ -56,10 +57,10 @@ class RestClientMetaClass(type):
         get_request_args = ",".join(["{0}={0}".format(argname) for argname in required_args])
         get_request_string = "self.{0}.{1}({2})".format(resource_field_name, request_type, get_request_args)
         if include_kwargs:
-            func_definition = "def {0}(self, {1}, **kwargs): return self._execute_request(self, {2}, data=kwargs)".format(
+            func_definition = "def {0}(self, {1}, **kwargs): return self._execute_request({2}, data=kwargs)".format(
                 func_name, required_args_str, get_request_string)
         else:
-            func_definition = "def {0}(self, {1}): return self._execute_request(self, {2})".format(
+            func_definition = "def {0}(self, {1}): return self._execute_request({2})".format(
                 func_name, required_args_str, get_request_string)
         func = compile(func_definition, __file__, 'exec')
         d = {}
@@ -71,7 +72,11 @@ class RestClientMetaClass(type):
 
 
 class Client(object):
+    __metaclass__ = RestClientMetaClass
     BASE_URL = "http://api.2600hz.com:8000/v1"
+
+    _conference_resource = RestResource("conference",
+                                       "/accounts/{account_id}/conferences/{conference_id}")
 
     def __init__(self, api_key=None, password=None, account_name=None,
                  username=None):
