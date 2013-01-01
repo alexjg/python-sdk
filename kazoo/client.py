@@ -7,10 +7,67 @@ from kazoo.request_objects import KazooRequest, UsernamePasswordAuthRequest, \
 class RestClientMetaClass(type):
 
     def __init__(cls, name, bases, dct):
-        super(RestClientMetaclass, cls).__init__(name, bases, dct)
+        super(RestClientMetaClass, cls).__init__(name, bases, dct)
         for key, value in dct.items():
-            if hasattr(value, "verbose_name"):
-                cls._add_resource_methods(value, dct)
+            if hasattr(value, "plural_name"):
+                cls._add_resource_methods(key, value, dct)
+
+    def _add_resource_methods(cls, resource_field_name, rest_resource, dct):
+        cls._generate_list_func(resource_field_name, rest_resource)
+        cls._generate_get_object_func(resource_field_name, rest_resource)
+        cls._generate_delete_object_func(resource_field_name, rest_resource)
+        cls._generate_update_object_func(resource_field_name, rest_resource)
+        cls._generate_create_object_func(resource_field_name, rest_resource)
+
+    def _generate_create_object_func(cls, resource_field_name, rest_resource):
+        func_name = "create_{0}".format(rest_resource.name)
+        required_args = rest_resource.required_args
+        func = cls._generate_resource_func(func_name, resource_field_name, required_args, 'create_object_request', include_kwargs=True)
+        setattr(cls, func_name, func)
+
+    def _generate_list_func(cls, resource_field_name, rest_resource):
+        func_name = "get_{0}".format(rest_resource.plural_name)
+        required_args = rest_resource.required_args
+        func = cls._generate_resource_func(func_name, resource_field_name, required_args, 'get_list_request')
+        setattr(cls, func_name, func)
+
+    def _generate_get_object_func(cls, resource_field_name, rest_resource):
+        func_name = 'get_{0}'.format(rest_resource.name)
+        required_args = rest_resource.required_args + [rest_resource.object_arg]
+        func = cls._generate_resource_func(func_name, resource_field_name, required_args, 'get_object_request')
+        setattr(cls, func_name, func)
+
+    def _generate_delete_object_func(cls, resource_field_name, rest_resource):
+        func_name = 'delete_{0}'.format(rest_resource.name)
+        required_args = rest_resource.required_args + [rest_resource.object_arg]
+        func = cls._generate_resource_func(func_name, resource_field_name, required_args, 'get_delete_object_request')
+        setattr(cls, func_name, func)
+
+    def _generate_update_object_func(cls, resource_field_name, rest_resource):
+        func_name = 'update_{0}'.format(rest_resource.name)
+        required_args = rest_resource.required_args + [rest_resource.object_arg]
+        func = cls._generate_resource_func(func_name, resource_field_name, required_args, 'get_update_object_request', include_kwargs=True)
+        setattr(cls, func_name, func)
+
+    def _generate_resource_func(cls, func_name, resource_field_name, required_args, request_type, include_kwargs=False):
+        # This is quite nasty, the point of it is to generate a function which
+        # has named required arguments so that it is nicely self documenting.
+        required_args_str = ",".join(required_args)
+        get_request_args = ",".join(["{0}={0}".format(argname) for argname in required_args])
+        get_request_string = "self.{0}.{1}({2})".format(resource_field_name, request_type, get_request_args)
+        if include_kwargs:
+            func_definition = "def {0}(self, {1}, **kwargs): return self._execute_request(self, {2}, data=kwargs)".format(
+                func_name, required_args_str, get_request_string)
+        else:
+            func_definition = "def {0}(self, {1}): return self._execute_request(self, {2})".format(
+                func_name, required_args_str, get_request_string)
+        func = compile(func_definition, __file__, 'exec')
+        d = {}
+        exec func in d
+        return d[func_name]
+
+
+
 
 
 class Client(object):
