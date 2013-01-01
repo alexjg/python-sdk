@@ -45,6 +45,20 @@ class RestResourceTestCase(unittest.TestCase):
         self.assertEqual(request.path, "/1/subresource")
         self.assertEqual(request.method, 'put')
 
+class ExtraViewsResourceTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.resource = RestResource(
+            "somresource",
+            "/{id1}/somesubresource/{id2}",
+            extra_views = ["status", "missing"]
+        )
+
+    def test_extra_view_returns_correct_url(self):
+        request = self.resource.get_extra_view_request("status", id1=1)
+        self.assertEqual(request.path, "/1/somesubresource/status")
+
+
 class PluralNameResourceTestCase(unittest.TestCase):
 
     def test_resource_plural_name(self):

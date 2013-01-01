@@ -3,7 +3,7 @@ import re
 
 class RestResource(object):
 
-    def __init__(self, name, path, plural_name=None):
+    def __init__(self, name, path, plural_name=None, extra_views=[]):
         self._param_regex = re.compile("{([a-zA-Z0-9_]+)}")
         self.name = name
         self._plural_name = plural_name
@@ -11,6 +11,7 @@ class RestResource(object):
         self.required_args = self._get_required_arguments(path)
         self.object_arg = self._get_object_argument(path)
         self.path = self._get_resource_path(path)
+        self.extra_views = extra_views
 
     def _get_resource_path(self, path):
         return path[:path.find(self.object_arg) - 2]
@@ -23,6 +24,7 @@ class RestResource(object):
         params = self._get_params(path)
         if len(params) > 1:
             return params[:-1]
+        return params
 
     def _get_object_argument(self, path):
         return self._get_params(path)[-1]
@@ -50,6 +52,9 @@ class RestResource(object):
 
     def get_create_object_request(self, **kwargs):
         return KazooRequest(self.path.format(**kwargs), method='put')
+
+    def get_extra_view_request(self, viewname, **kwargs):
+        return KazooRequest(self.path.format(**kwargs) + "/" + viewname)
 
     @property
     def plural_name(self):
