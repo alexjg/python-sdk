@@ -1,5 +1,7 @@
-import unittest
 from kazoo.rest_resources import RestResource
+from kazoo import rest_resources
+import mock
+import unittest
 
 class RestResourceTestCase(unittest.TestCase):
 
@@ -20,9 +22,9 @@ class RestResourceTestCase(unittest.TestCase):
     def test_resource_plural_name(self):
         self.assertEqual(self.resource.plural_name, "subresources")
 
-    #def test_resource_list_method_hits_correct_url(self):
-        #with mock.patch.object(test_resources, 'KazooRequest') as req_cons:
-            #resource = RestResource(self.path)
-            #resource.get)subresources
+    def test_resource_path_correctly_calculated(self):
+        self.assertEqual(self.resource.path, "/{argument1}/subresource")
 
-
+    def test_resource_list_method_hits_correct_url(self):
+        request = self.resource.get_list_request(argument1=1)
+        self.assertEqual(request.path, "/1/subresource")
