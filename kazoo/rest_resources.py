@@ -45,6 +45,9 @@ class RestResource(object):
     def get_update_object_request(self, **kwargs):
         return KazooRequest(self._get_full_url(kwargs), method='post')
 
+    def get_delete_object_request(self, **kwargs):
+        return KazooRequest(self._get_full_url(kwargs), method='delete')
+
     @property
     def plural_name(self):
         return self.name + "s"

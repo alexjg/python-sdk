@@ -37,3 +37,9 @@ class RestResourceTestCase(unittest.TestCase):
         request = self.resource.get_update_object_request(argument1=1, argument2=2)
         self.assertEqual(request.path, "/1/subresource/2")
         self.assertEqual(request.method, 'post')
+
+    def test_delete_resource_correct_url_and_method(self):
+        request = self.resource.get_delete_object_request(argument1=1, argument2=2)
+        self.assertEqual(request.path, "/1/subresource/2")
+        self.assertEqual(request.method, 'delete')
+
