@@ -30,6 +30,10 @@ class RestResource(object):
         param_names = self._param_regex.findall(path)
         return param_names
 
+    def _get_full_url(self, params):
+        object_id = params[self.object_arg]
+        return self.path.format(**params) + "/{0}".format(object_id)
+
     def get_list_request(self, **kwargs):
         relative_path = self.path.format(**kwargs)
         return KazooRequest(relative_path)
@@ -38,6 +42,8 @@ class RestResource(object):
         object_id = kwargs[self.object_arg]
         return KazooRequest(self.path.format(**kwargs) + "/" + str(object_id))
 
+    def get_update_object_request(self, **kwargs):
+        return KazooRequest(self._get_full_url(kwargs), method='post')
 
     @property
     def plural_name(self):
