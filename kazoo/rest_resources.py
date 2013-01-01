@@ -31,7 +31,7 @@ class RestResource(object):
         return param_names
 
     def get_list_request(self, **kwargs):
-        relative_path = self.path.format(kwargs)
+        relative_path = self.path.format(**kwargs)
         return KazooRequest(relative_path)
 
 
