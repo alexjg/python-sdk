@@ -39,14 +39,16 @@ class RestResource(object):
         return KazooRequest(relative_path)
 
     def get_object_request(self, **kwargs):
-        object_id = kwargs[self.object_arg]
-        return KazooRequest(self.path.format(**kwargs) + "/" + str(object_id))
+        return KazooRequest(self._get_full_url(kwargs))
 
     def get_update_object_request(self, **kwargs):
         return KazooRequest(self._get_full_url(kwargs), method='post')
 
     def get_delete_object_request(self, **kwargs):
         return KazooRequest(self._get_full_url(kwargs), method='delete')
+
+    def get_create_object_request(self, **kwargs):
+        return KazooRequest(self.path.format(**kwargs), method='put')
 
     @property
     def plural_name(self):

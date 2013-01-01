@@ -43,3 +43,8 @@ class RestResourceTestCase(unittest.TestCase):
         self.assertEqual(request.path, "/1/subresource/2")
         self.assertEqual(request.method, 'delete')
 
+    def test_create_resource_correct_url_and_method(self):
+        request = self.resource.get_create_object_request(argument1=1)
+        self.assertEqual(request.path, "/1/subresource")
+        self.assertEqual(request.method, 'put')
+
