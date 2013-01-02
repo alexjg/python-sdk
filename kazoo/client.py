@@ -105,12 +105,59 @@ class Client(object):
 
     _accounts_resource = RestResource("account",
                                       "/accounts/{account_id}",
-                                      exclude_methods=["list", "delete"])
+                                      exclude_methods=["list", "delete", "create"],
+                                      extra_views=[{"name":"get_account_children",
+                                                    "path":"children",
+                                                    "scope":"object"},
+                                                   {"name":"get_account_descendants",
+                                                    "path":"descendants",
+                                                    "scope":"object"},
+                                                   {"name":"get_user_auth",
+                                                    "path":"user_auth",
+                                                    "scope":"object"}])
+    _callflow_resource = RestResource("callflow",
+                                      "/accounts/{account_id}/callflows/{callflow_id}")
     _conference_resource = RestResource("conference",
                                        "/accounts/{account_id}/conferences/{conference_id}")
     _device_resource = RestResource("device",
                                     "/accounts/{account_id}/devices/{device_id}",
                                     extra_views=[{"name":"get_all_devices_status", "path":"status"}])
+    _directories_resource = RestResource("directory",
+                                         "/accounts/{account_id}/directories/{directory_id}")
+    _global_resources = RestResource("global_resource",
+                                     "/accounts/{account_id}/global_resources/{resource_id}")
+    _limits_resource = RestResource("limit",
+                                    "/accounts/{account_id}/limits/{ignored}",
+                                    methods=["list"])
+    _local_resources_resource = RestResource("local_resource",
+                                             "/accounts/{account_id}/local_resources/{resource_id}")
+    _media_resource = RestResource("medium",
+                                   "/accounts/{account_id}/media/{media_id}",
+                                   plural_name="media")
+    _menus_resource = RestResource("menu",
+                                   "/accounts/{account_id}/menus/{menu_id}")
+    _phone_number_resource = RestResource("phone_number",
+                                          "/accounts/{account_id}/phone_numbers/{phone_number_id}")
+    _queues_resource = RestResource("queue",
+                                    "/accounts/{account_id}/queues/{queue_id}")
+    _server_resource = RestResource("server",
+                                    "/accounts/{account_id}/servers/{server_id}",
+                                    methods=["list"],
+                                    extra_views=[
+                                        {"name":"get_deployment", "path":"deployment", "scope":"object"},
+                                        {"name":"get_server_log", "path":"log"}
+                                    ])
+    _create_server_deployment_resource = RestResource("server_deployment",
+                                                      "/accounts/{account_id}/servers/{server_id}/deployment/{ignored}",
+                                                      methods=["create"])
+    _temporal_rules_resource = RestResource("temporal_rule",
+                                            "/accounts/{account_id}/temporal_rules/{rule_id}")
+    _users_resource = RestResource("user",
+                                   "/accounts/{account_id}/users/{user_id}",
+                                   extra_views=[{"name":"get_hotdesk", "path":"hotdesk"}])
+    _vmbox_resource = RestResource("voicemail_box",
+                                   "/accounts/{account_id}/vmboxes/{vmbox_id}")
+
 
     def __init__(self, api_key=None, password=None, account_name=None,
                  username=None):
