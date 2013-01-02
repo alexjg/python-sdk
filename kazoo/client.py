@@ -64,13 +64,15 @@ class RestClientMetaClass(type):
         # If you're having trouble following it stick a print statement in
         # around the func_definition variable and the import in a shell.
         required_args_str = ",".join(required_args)
+        if len(required_args) > 0:
+            required_args_str += ","
         get_request_args = ",".join(["{0}={0}".format(argname) for argname in required_args])
         if request_type:
             get_request_string = "self.{0}.{1}({2})".format(resource_field_name, request_type, get_request_args)
         else:
             get_request_string = "self.{0}.get_extra_view_request(\"{1}\",{2})".format(resource_field_name, extra_view_name, get_request_args)
         if include_kwargs:
-            func_definition = "def {0}(self, {1}, **kwargs): return self._execute_request({2}, data=kwargs)".format(
+            func_definition = "def {0}(self, {1} **kwargs): return self._execute_request({2}, data=kwargs)".format(
                 func_name, required_args_str, get_request_string)
         else:
             func_definition = "def {0}(self, {1}): return self._execute_request({2})".format(
@@ -88,6 +90,8 @@ class Client(object):
     __metaclass__ = RestClientMetaClass
     BASE_URL = "http://api.2600hz.com:8000/v1"
 
+    _accounts_resource = RestResource("account",
+                                      "/accounts/{account_id}")
     _conference_resource = RestResource("conference",
                                        "/accounts/{account_id}/conferences/{conference_id}")
     _device_resource = RestResource("device",
@@ -127,51 +131,3 @@ class Client(object):
         if request.auth_required:
             kwargs["token"] = self.auth_token
         return request.execute(self.BASE_URL, **kwargs)
-
-    def get_account(self, account_id):
-        get_account_request = KazooRequest("/accounts/{account_id}")
-        return self._execute_request(get_account_request,
-                                     account_id=account_id)
-
-    def update_account(self, account_id, **kwargs):
-        """Update the account"""
-        update_account_request = KazooRequest("/accounts/{account_id}")
-        return self._execute_request(update_account_request,
-                                     account_id=account_id,
-                                     method='post',
-                                     data=kwargs)
-
-    def delete_account(self, account_id):
-        delete_account_request = KazooRequest("/accounts/{account_id}")
-        return self._execute_request(delete_account_request,
-                                     account_id=account_id,
-                                     method='delete')
-
-    def get_callflows(self, account_id):
-        get_callflows_request = KazooRequest("/accounts/{account_id}/callflows")
-        return self._execute_request(get_callflows_request,
-                                     account_id=account_id)
-
-    def add_callflow(self, account_id, **kwargs):
-        add_callflow_req = KazooRequest("/accounts/{account_id}/callflows")
-        return self._execute_request(add_callflow_req,
-                                     account_id=account_id,
-                                     method="put",
-                                     data=kwargs)
-
-    def update_callflow(self, account_id, callflow_id, **kwargs):
-        update_callflow_req = KazooRequest("/accounts/{account_id}/callflows/{callflow_id}")
-        return self._execute_request(update_callflow_req,
-                                     account_id=account_id,
-                                     callflow_id=callflow_id,
-                                     data=kwargs,
-                                     method="post")
-
-    def delete_callflow(self, account_id, callflow_id):
-        delete_callflow_req = KazooRequest("/accounts/{account_id}/callflows/{callflow_id}")
-        return self._execute_request(delete_callflow_req,
-                                     account_id=account_id,
-                                     callflow_id=callflow_id,
-                                     method="delete")
-
-

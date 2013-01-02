@@ -24,7 +24,7 @@ class RestResource(object):
         params = self._get_params(path)
         if len(params) > 1:
             return params[:-1]
-        return params
+        return []
 
     def _get_object_argument(self, path):
         return self._get_params(path)[-1]

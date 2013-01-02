@@ -19,6 +19,11 @@ class RestResourceTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             resource = RestResource("somename", "/blahblah/blah")
 
+    def test_resource_with_no_required_args_correct(self):
+        resource = RestResource("somename", "/sompath/{someobj_id}")
+        self.assertEqual(resource.required_args, [])
+        self.assertEqual(resource.object_arg, "someobj_id")
+
     def test_resource_path_correctly_calculated(self):
         self.assertEqual(self.resource.path, "/{argument1}/subresource")
 
