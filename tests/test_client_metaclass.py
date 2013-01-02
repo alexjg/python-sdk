@@ -14,6 +14,11 @@ class TestClass(object):
     detail_only_resource = RestResource("auction",
                                         "/users/{user_id}/auctions/{auction_id}",
                                         methods=["detail"])
+    extra_object_view_resource = RestResource(
+        "tools",
+        "/sheds/{shed_id}/tools/{tool_id}",
+        extra_views=[{"name":"get_tool_users", "path":"users", "scope":"object"}]
+    )
 
 class MetaclassMethodCreationTestCase(unittest.TestCase):
 
@@ -40,6 +45,10 @@ class MetaclassMethodCreationTestCase(unittest.TestCase):
     def test_extra_views_created(self):
         self.assertTrue(hasattr(self.test_resource, "get_all_books_status"))
         self.assertTrue(hasattr(self.test_resource, "get_unavailable"))
+
+    def test_extra_view_with_object_scope_has_extra_argument(self):
+        args, _, _, _ = inspect.getargspec(self.test_resource.get_tool_users)
+        self.assertEqual(args, ["self", "shed_id", "tool_id"])
 
     def test_only_specified_methods_created(self):
         self.assertTrue(hasattr(self.test_resource, "get_auction"))

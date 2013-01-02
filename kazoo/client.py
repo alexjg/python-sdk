@@ -64,7 +64,10 @@ class RestClientMetaClass(type):
 
     def _generate_extra_view_func(cls, extra_view_desc, resource_field_name, rest_resource):
         func_name = extra_view_desc["name"]
-        required_args = rest_resource.required_args
+        if extra_view_desc["scope"] == "aggregate":
+            required_args = rest_resource.required_args
+        else:
+            required_args = rest_resource.required_args + [rest_resource.object_arg]
         func = cls._generate_resource_func(func_name, resource_field_name, required_args, extra_view_name=extra_view_desc["path"])
         setattr(cls, func_name, func)
 
