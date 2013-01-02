@@ -6,10 +6,7 @@
 Welcome to Kazoo's documentation!
 =================================
 
-Contents:
-
-.. toctree::
-   :maxdepth: 2
+This is a wrapper around the Kazoo API.
 
 
 .. autoclass:: kazoo.Client
