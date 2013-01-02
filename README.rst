@@ -3,7 +3,7 @@ Installing
 
 Install from pip::
 
-    pip install kazoo
+    pip install kazoo-api
 
 
 Authentication
