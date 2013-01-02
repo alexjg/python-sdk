@@ -1,10 +1,12 @@
 from kazoo.request_objects import KazooRequest
 import re
 
+method_types = ["detail","list","update","create","delete"]
+
 class RestResource(object):
 
     def __init__(self, name, path, plural_name=None, extra_views=[],
-                 methods=["detail","list","update","create","delete"]):
+                 methods=method_types, exclude_methods=[]):
         self._param_regex = re.compile("{([a-zA-Z0-9_]+)}")
         self.name = name
         self._plural_name = plural_name
@@ -13,7 +15,10 @@ class RestResource(object):
         self.object_arg = self._get_object_argument(path)
         self.path = self._get_resource_path(path)
         self._initialize_extra_view_descriptions(extra_views)
-        self.methods = methods
+        self._initialize_methods(methods, exclude_methods)
+
+    def _initialize_methods(self, methods, exclude_methods):
+        self.methods = list(set(methods) - set(exclude_methods))
 
     def _get_resource_path(self, path):
         return path[:path.find(self.object_arg) - 2]
