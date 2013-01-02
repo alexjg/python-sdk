@@ -48,9 +48,12 @@ class RestResource(object):
         self.extra_views = []
         for view_desc in view_descs:
             if hasattr(view_desc, "has_key"):
-                self.extra_views.append(view_desc)
+                result = view_desc
             else:
-                self.extra_views.append({"name":"get_" + view_desc,"path":view_desc})
+                result = {"name":"get_" + view_desc,"path":view_desc}
+            if "scope" not in result:
+                result["scope"] = "aggregate"
+            self.extra_views.append(result)
 
     def get_list_request(self, **kwargs):
         relative_path = self.path.format(**kwargs)
@@ -69,7 +72,15 @@ class RestResource(object):
         return KazooRequest(self.path.format(**kwargs), method='put')
 
     def get_extra_view_request(self, viewname, **kwargs):
-        return KazooRequest(self.path.format(**kwargs) + "/" + viewname)
+        view_desc = None
+        for desc in self.extra_views:
+            if desc["path"] == viewname:
+                view_desc = desc
+        if view_desc is None:
+            raise ValueError("Unknown extra view name {0}".format(viewname))
+        if view_desc["scope"] == "aggregate":
+            return KazooRequest(self.path.format(**kwargs) + "/" + viewname)
+        return KazooRequest(self._get_full_url(kwargs) + "/" + viewname)
 
     @property
     def plural_name(self):

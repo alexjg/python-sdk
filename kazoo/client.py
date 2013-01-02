@@ -101,7 +101,8 @@ class Client(object):
     BASE_URL = "http://api.2600hz.com:8000/v1"
 
     _accounts_resource = RestResource("account",
-                                      "/accounts/{account_id}")
+                                      "/accounts/{account_id}",
+                                      exclude_methods=["list", "delete"])
     _conference_resource = RestResource("conference",
                                        "/accounts/{account_id}/conferences/{conference_id}")
     _device_resource = RestResource("device",

@@ -56,12 +56,19 @@ class ExtraViewsResourceTestCase(unittest.TestCase):
         self.resource = RestResource(
             "somresource",
             "/{id1}/somesubresource/{id2}",
-            extra_views = [{"path":"status", "name": "all_devices_status"}, "missing"]
+            extra_views = [
+                {"path":"status", "name": "all_devices_status"},
+                "missing",
+                {"path":"children", "name":"subresource_children", "scope":"object"}]
         )
 
     def test_extra_view_returns_correct_url(self):
         request = self.resource.get_extra_view_request("status", id1=1)
         self.assertEqual(request.path, "/1/somesubresource/status")
+
+    def test_extra_view_with_object_scope_returns_correct_url(self):
+        request = self.resource.get_extra_view_request("children", id1=1, id2=2)
+        self.assertEqual(request.path, "/1/somesubresource/2/children")
 
     def test_extra_views_described_by_dictionary(self):
         for view_desc in self.resource.extra_views:
@@ -74,6 +81,15 @@ class ExtraViewsResourceTestCase(unittest.TestCase):
                 self.assertEqual(view_desc["path"], "missing")
                 self.assertEqual(view_desc["name"], "get_missing")
 
+    def test_scope_added_if_not_specified(self):
+        for view_desc in self.resource.extra_views:
+            if view_desc["path"] != "children":
+                self.assertEqual(view_desc["scope"], "aggregate")
+
+    def test_specified_scope_takes_precedence(self):
+        for view_desc in self.resource.extra_views:
+            if view_desc["path"] == "children":
+                self.assertEqual(view_desc["scope"], "object")
 
 
 class PluralNameResourceTestCase(unittest.TestCase):
