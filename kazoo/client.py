@@ -100,6 +100,26 @@ class RestClientMetaClass(type):
 
 
 class Client(object):
+    """The interface to the Kazoo API
+
+    This class should be initialized either with a username, password and
+    account name combination, or with an API key. Once you have initialized
+    the client you will need to call :meth:`authenticate()` before you can begin
+    making API calls.
+
+    API calls which do not require data have a fixed number of required
+    arguments. Those which do need data take it in the form of optional keword
+    arguments. For example, ::
+
+        client.update_account(acct_id, name="somename", realm="superfunrealm")
+
+    Dictionaries and lists will automatically be converted to their appropriate
+    representation so you can do things like: ::
+
+        client.update_callflow(acct_id, callflow_id, flow={"module":"it"})
+
+    Invalid data will result in an exception explaining the problem.
+    """
     __metaclass__ = RestClientMetaClass
     BASE_URL = "http://api.2600hz.com:8000/v1"
 
@@ -182,6 +202,9 @@ class Client(object):
         self.auth_token = None
 
     def authenticate(self):
+        """Call this before making other api calls to fetch an auth token
+        which will be automatically used for all further requests
+        """
         if not self._authenticated:
             self.auth_token = self.auth_request.execute(
                 self.BASE_URL)["auth_token"]
