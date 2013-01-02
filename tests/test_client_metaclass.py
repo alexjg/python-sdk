@@ -8,9 +8,12 @@ class TestClass(object):
     __metaclass__ = RestClientMetaClass
     some_resource = RestResource("some_resource",
         "/{resource_one_id}/subresources/{resource_two_id}")
-    get_only_resource = RestResource("books",
+    extra_views_resource = RestResource("books",
         "/{resource_one_id}/books/{bookid}",
         extra_views=["unavailable", {"name":"get_all_books_status", "path":"status"}])
+    detail_only_resource = RestResource("auction",
+                                        "/users/{user_id}/auctions/{auction_id}",
+                                        methods=["detail"])
 
 class MetaclassMethodCreationTestCase(unittest.TestCase):
 
@@ -37,6 +40,17 @@ class MetaclassMethodCreationTestCase(unittest.TestCase):
     def test_extra_views_created(self):
         self.assertTrue(hasattr(self.test_resource, "get_all_books_status"))
         self.assertTrue(hasattr(self.test_resource, "get_unavailable"))
+
+    def test_only_specified_methods_created(self):
+        self.assertTrue(hasattr(self.test_resource, "get_auction"))
+        invalid_names = [
+            "get_auctions",
+            "create_auction",
+            "update_auction",
+            "delete_auction"
+        ]
+        for name in invalid_names:
+            self.assertFalse(hasattr(self.test_resource, name))
 
     def _assert_resource_id_arguments(self, method_name):
         func = getattr(self.test_resource, method_name)
