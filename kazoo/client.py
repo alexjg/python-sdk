@@ -27,7 +27,7 @@ class RestClientMetaClass(type):
             return
         func_name = "create_{0}".format(rest_resource.name)
         required_args = rest_resource.required_args
-        func = cls._generate_resource_func(func_name, resource_field_name, required_args, request_type='get_create_object_request', include_kwargs=True)
+        func = cls._generate_resource_func(func_name, resource_field_name, required_args, request_type='get_create_object_request', requires_data=True)
         setattr(cls, func_name, func)
 
     def _generate_list_func(cls, resource_field_name, rest_resource):
@@ -59,7 +59,7 @@ class RestClientMetaClass(type):
             return
         func_name = 'update_{0}'.format(rest_resource.name)
         required_args = rest_resource.required_args + [rest_resource.object_arg]
-        func = cls._generate_resource_func(func_name, resource_field_name, required_args, request_type='get_update_object_request', include_kwargs=True)
+        func = cls._generate_resource_func(func_name, resource_field_name, required_args, request_type='get_update_object_request', requires_data=True)
         setattr(cls, func_name, func)
 
     def _generate_extra_view_func(cls, extra_view_desc, resource_field_name, rest_resource):
@@ -71,11 +71,15 @@ class RestClientMetaClass(type):
         func = cls._generate_resource_func(func_name, resource_field_name, required_args, extra_view_name=extra_view_desc["path"])
         setattr(cls, func_name, func)
 
-    def _generate_resource_func(cls, func_name, resource_field_name, required_args, request_type=None, extra_view_name=None, include_kwargs=False):
+    def _generate_resource_func(cls, func_name, resource_field_name, resource_required_args, request_type=None, extra_view_name=None,
+                                requires_data=False):
         # This is quite nasty, the point of it is to generate a function which
         # has named required arguments so that it is nicely self documenting.
         # If you're having trouble following it stick a print statement in
-        # around the func_definition variable and the import in a shell.
+        # around the func_definition variable and then import in a shell.
+        required_args = list(resource_required_args)
+        if requires_data:
+            required_args.append("data")
         required_args_str = ",".join(required_args)
         if len(required_args) > 0:
             required_args_str += ","
@@ -84,8 +88,8 @@ class RestClientMetaClass(type):
             get_request_string = "self.{0}.{1}({2})".format(resource_field_name, request_type, get_request_args)
         else:
             get_request_string = "self.{0}.get_extra_view_request(\"{1}\",{2})".format(resource_field_name, extra_view_name, get_request_args)
-        if include_kwargs:
-            func_definition = "def {0}(self, {1} **kwargs): return self._execute_request({2}, data=kwargs)".format(
+        if requires_data:
+            func_definition = "def {0}(self, {1}): return self._execute_request({2}, data=data)".format(
                 func_name, required_args_str, get_request_string)
         else:
             func_definition = "def {0}(self, {1}): return self._execute_request({2})".format(
@@ -131,9 +135,6 @@ class Client(object):
                                                     "scope":"object"},
                                                    {"name":"get_account_descendants",
                                                     "path":"descendants",
-                                                    "scope":"object"},
-                                                   {"name":"get_user_auth",
-                                                    "path":"user_auth",
                                                     "scope":"object"}])
     _callflow_resource = RestResource("callflow",
                                       "/accounts/{account_id}/callflows/{callflow_id}")

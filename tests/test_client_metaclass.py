@@ -33,14 +33,14 @@ class MetaclassMethodCreationTestCase(unittest.TestCase):
         self._assert_resource_id_arguments("get_some_resource")
 
     def test_update_resource_has_object_id_arguments(self):
-        self._assert_resource_id_arguments("update_some_resource")
+        self._assert_resource_id_arguments("update_some_resource", includes_data=True)
 
     def test_delete_resource_has_object_id_arguments(self):
         self._assert_resource_id_arguments("delete_some_resource")
 
     def test_create_resource_has_no_object_id(self):
         args, _, varkw, _ = inspect.getargspec(self.test_resource.create_some_resource)
-        self.assertEqual(args, ["self", "resource_one_id"])
+        self.assertEqual(args, ["self", "resource_one_id", "data"])
 
     def test_extra_views_created(self):
         self.assertTrue(hasattr(self.test_resource, "get_all_books_status"))
@@ -61,10 +61,13 @@ class MetaclassMethodCreationTestCase(unittest.TestCase):
         for name in invalid_names:
             self.assertFalse(hasattr(self.test_resource, name))
 
-    def _assert_resource_id_arguments(self, method_name):
+    def _assert_resource_id_arguments(self, method_name, includes_data=False):
         func = getattr(self.test_resource, method_name)
         args, _, _, _ = inspect.getargspec(func)
-        self.assertEqual(args, ["self", "resource_one_id", "resource_two_id"])
+        if includes_data:
+            self.assertEqual(args, ["self", "resource_one_id", "resource_two_id", "data"])
+        else:
+            self.assertEqual(args, ["self", "resource_one_id", "resource_two_id"])
 
 
 

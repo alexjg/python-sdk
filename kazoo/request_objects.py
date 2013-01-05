@@ -49,7 +49,7 @@ class KazooRequest(object):
                     param_name))
         subbed_path = self.path.format(**kwargs)
         full_url = base_url + subbed_path
-        logger.debug("Making request to url {0}".format(full_url.encode("utf-8")))
+        logger.debug("Making {0} request to url {1}".format(method, full_url.encode("utf-8")))
         headers = self._get_headers(token=token)
         req_func = getattr(requests, method)
         if data:
