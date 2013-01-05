@@ -121,6 +121,29 @@ class RestResourceMethodNameTestCase(unittest.TestCase):
                           "delete": "delete_someresource"}
         self.assertEqual(expected_names, method_names)
 
+    def test_custom_resource_names(self):
+        method_names={"list":"get_books",
+                      "object": "get_book",
+                      "update": "update_book",
+                      "create": "create_book",
+                      "delete": "delete_book"}
+        resource = RestResource("someresource", "/someplace/{resource_id}",
+                                method_names=method_names)
+        self.assertEqual(resource.method_names, method_names)
+
+    def test_custom_resource_names_merged_with_default(self):
+        method_names = {"list": "get_books", "create": "create_book"}
+        resource = RestResource("someresource", "/someplace/{resource_id}",
+                                method_names=method_names)
+        expected_names = dict(method_names)
+        expected_names.update({
+            "object": "get_someresource",
+            "update": "update_someresource",
+            "delete": "delete_someresource"
+        })
+        self.assertEqual(expected_names, resource.method_names)
+
+
 class AvailableMethodsResourceTestCase(unittest.TestCase):
 
     def test_excludes_resource(self):

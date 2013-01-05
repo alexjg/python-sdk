@@ -7,7 +7,8 @@ method_types = ["detail", "list", "update", "create", "delete"]
 class RestResource(object):
 
     def __init__(self, name, path, plural_name=None, extra_views=[],
-                 methods=method_types, exclude_methods=[]):
+                 methods=method_types, exclude_methods=[],
+                 method_names={}):
         self._param_regex = re.compile("{([a-zA-Z0-9_]+)}")
         self.name = name
         self._plural_name = plural_name
@@ -17,9 +18,9 @@ class RestResource(object):
         self.path = self._get_resource_path(path)
         self._initialize_extra_view_descriptions(extra_views)
         self._initialize_methods(methods, exclude_methods)
-        self._initialize_method_names()
+        self._initialize_method_names(method_names)
 
-    def _initialize_method_names(self):
+    def _initialize_method_names(self, given_method_names):
         self.method_names = {
             "list": "get_{0}".format(self.plural_name),
             "object": "get_{0}".format(self.name),
@@ -27,6 +28,7 @@ class RestResource(object):
             "create": "create_{0}".format(self.name),
             "delete": "delete_{0}".format(self.name),
         }
+        self.method_names.update(given_method_names)
 
     def _initialize_methods(self, methods, exclude_methods):
         self.methods = list(set(methods) - set(exclude_methods))
