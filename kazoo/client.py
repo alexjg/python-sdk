@@ -111,16 +111,15 @@ class Client(object):
     the client you will need to call :meth:`authenticate()` before you can begin
     making API calls.
 
-    API calls which do not require data have a fixed number of required
-    arguments. Those which do need data take it in the form of optional keword
-    arguments. For example, ::
+    API calls which require data take it in the form of a required argument called
+    'data' which is the last argument to the method. For example ::
 
-        client.update_account(acct_id, name="somename", realm="superfunrealm")
+        client.update_account(acct_id, {"name": "somename", "realm":"superfunrealm"})
 
     Dictionaries and lists will automatically be converted to their appropriate
     representation so you can do things like: ::
 
-        client.update_callflow(acct_id, callflow_id, flow={"module":"it"})
+        client.update_callflow(acct_id, callflow_id, {"flow":{"module":"somemodule"}})
 
     Invalid data will result in an exception explaining the problem.
     """
