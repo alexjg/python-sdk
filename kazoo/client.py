@@ -97,11 +97,16 @@ class RestClientMetaClass(type):
         else:
             required_args = rest_resource.required_args + \
                 [rest_resource.object_arg]
+        if extra_view_desc["method"] in ["put", "post"]:
+            requires_data=True
+        else:
+            requires_data = False
         func = cls._generate_resource_func(
             func_name,
             resource_field_name,
             required_args,
-            extra_view_name=extra_view_desc["path"])
+            extra_view_name=extra_view_desc["path"],
+            requires_data=requires_data)
         setattr(cls, func_name, func)
 
     def _generate_resource_func(cls, func_name, resource_field_name,
@@ -270,12 +275,12 @@ class Client(object):
             {"name": "get_deployment",
              "path": "deployment",
              "scope": "object"},
+            {"name": "create_deployment",
+             "path": "deployment",
+             "scope": "object",
+             "method": "put"},
             {"name": "get_server_log", "path": "log"}
         ])
-    _create_server_deployment_resource = RestResource(
-        "server_deployment",
-        "/accounts/{account_id}/servers/{server_id}/deployment/{ignored}",
-        methods=["create"])
     _temporal_rules_resource = RestResource(
         "temporal_rule",
         "/accounts/{account_id}/temporal_rules/{rule_id}")

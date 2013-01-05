@@ -103,4 +103,3 @@ class GeneratedMethodNamesTestCase(unittest.TestCase):
                         "update_bird", "delete_bird"]
         for method_name in method_names:
             self.assertTrue(hasattr(self.test_resource, method_name))
-
