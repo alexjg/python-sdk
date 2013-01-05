@@ -27,7 +27,7 @@ class RestClientMetaClass(type):
     def _generate_create_object_func(cls, resource_field_name, rest_resource):
         if "create" not in rest_resource.methods:
             return
-        func_name = "create_{0}".format(rest_resource.name)
+        func_name = rest_resource.method_names["create"]
         required_args = rest_resource.required_args
         func = cls._generate_resource_func(
             func_name,
@@ -40,7 +40,7 @@ class RestClientMetaClass(type):
     def _generate_list_func(cls, resource_field_name, rest_resource):
         if "list" not in rest_resource.methods:
             return
-        func_name = "get_{0}".format(rest_resource.plural_name)
+        func_name = rest_resource.method_names["list"]
         required_args = rest_resource.required_args
         func = cls._generate_resource_func(
             func_name,
@@ -52,7 +52,7 @@ class RestClientMetaClass(type):
     def _generate_get_object_func(cls, resource_field_name, rest_resource):
         if "detail" not in rest_resource.methods:
             return
-        func_name = 'get_{0}'.format(rest_resource.name)
+        func_name = rest_resource.method_names["object"]
         required_args = rest_resource.required_args + \
             [rest_resource.object_arg]
         func = cls._generate_resource_func(
@@ -65,7 +65,7 @@ class RestClientMetaClass(type):
     def _generate_delete_object_func(cls, resource_field_name, rest_resource):
         if "delete" not in rest_resource.methods:
             return
-        func_name = 'delete_{0}'.format(rest_resource.name)
+        func_name = rest_resource.method_names["delete"]
         required_args = rest_resource.required_args + \
             [rest_resource.object_arg]
         func = cls._generate_resource_func(
@@ -78,7 +78,7 @@ class RestClientMetaClass(type):
     def _generate_update_object_func(cls, resource_field_name, rest_resource):
         if "update" not in rest_resource.methods:
             return
-        func_name = 'update_{0}'.format(rest_resource.name)
+        func_name = rest_resource.method_names["update"]
         required_args = rest_resource.required_args + \
             [rest_resource.object_arg]
         func = cls._generate_resource_func(

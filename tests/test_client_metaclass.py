@@ -24,6 +24,16 @@ class TestClass(object):
         extra_views=[
             {"name": "get_tool_users", "path": "users", "scope": "object"}]
     )
+    custom_names_resource = RestResource(
+        "stupidname",
+        "/place/{objid}",
+        method_names={
+            "list": "get_birds",
+            "object": "get_bird",
+            "create": "create_bird",
+            "update": "update_bird",
+            "delete": "delete_bird"
+        })
 
 
 class MetaclassMethodCreationTestCase(unittest.TestCase):
@@ -81,3 +91,16 @@ class MetaclassMethodCreationTestCase(unittest.TestCase):
             self.assertEqual(args,
                              ["self",
                               "resource_one_id", "resource_two_id"])
+
+
+class GeneratedMethodNamesTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.test_resource = TestClass()
+
+    def test_methods(self):
+        method_names = ["get_bird", "get_birds", "create_bird",
+                        "update_bird", "delete_bird"]
+        for method_name in method_names:
+            self.assertTrue(hasattr(self.test_resource, method_name))
+
