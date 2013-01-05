@@ -242,9 +242,12 @@ class Client(object):
     _local_resources_resource = RestResource(
         "local_resource",
         "/accounts/{account_id}/local_resources/{resource_id}")
-    _media_resource = RestResource("medium",
+    _media_resource = RestResource("media",
                                    "/accounts/{account_id}/media/{media_id}",
-                                   plural_name="media")
+                                   plural_name="media",
+                                   method_names={
+                                       "list": "get_all_media"
+                                   })
     _menus_resource = RestResource("menu",
                                    "/accounts/{account_id}/menus/{menu_id}")
     _phone_number_resource = RestResource(
