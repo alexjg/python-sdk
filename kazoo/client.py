@@ -258,7 +258,8 @@ class Client(object):
                                    "/accounts/{account_id}/menus/{menu_id}")
     _phone_number_resource = RestResource(
         "phone_number",
-        "/accounts/{account_id}/phone_numbers/{phone_number_id}")
+        "/accounts/{account_id}/phone_numbers/{phone_number_id}",
+        methods=["list", "update", "delete"])
     _queues_resource = RestResource("queue",
                                     "/accounts/{account_id}/queues/{queue_id}")
     _server_resource = RestResource(

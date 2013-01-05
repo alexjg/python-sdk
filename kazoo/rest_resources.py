@@ -66,6 +66,8 @@ class RestResource(object):
                 result = {"name": "get_" + view_desc, "path": view_desc}
             if "scope" not in result:
                 result["scope"] = "aggregate"
+            if "method" not in result:
+                result["method"] = "get"
             self.extra_views.append(result)
 
     def get_list_request(self, **kwargs):
@@ -92,8 +94,10 @@ class RestResource(object):
         if view_desc is None:
             raise ValueError("Unknown extra view name {0}".format(viewname))
         if view_desc["scope"] == "aggregate":
-            return KazooRequest(self.path.format(**kwargs) + "/" + viewname)
-        return KazooRequest(self._get_full_url(kwargs) + "/" + viewname)
+            return KazooRequest(self.path.format(**kwargs) + "/" + viewname,
+                                method=view_desc["method"])
+        return KazooRequest(self._get_full_url(kwargs) + "/" + viewname,
+                            method=view_desc["method"])
 
     @property
     def plural_name(self):

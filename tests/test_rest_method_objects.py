@@ -63,7 +63,9 @@ class ExtraViewsResourceTestCase(unittest.TestCase):
                 {"path": "status", "name":  "all_devices_status"},
                 "missing",
                 {"path": "children", "name": "subresource_children",
-                 "scope": "object"}]
+                 "scope": "object"},
+                {"path": "ingredients", "name": "ingredients",
+                 "scope": "object", "method": "put"}]
         )
 
     def test_extra_view_returns_correct_url(self):
@@ -88,13 +90,23 @@ class ExtraViewsResourceTestCase(unittest.TestCase):
 
     def test_scope_added_if_not_specified(self):
         for view_desc in self.resource.extra_views:
-            if view_desc["path"] != "children":
+            if view_desc["path"] == "status":
                 self.assertEqual(view_desc["scope"], "aggregate")
 
     def test_specified_scope_takes_precedence(self):
         for view_desc in self.resource.extra_views:
             if view_desc["path"] == "children":
                 self.assertEqual(view_desc["scope"], "object")
+
+    def test_default_method_is_get(self):
+        request = self.resource.get_extra_view_request("children", id1=1,
+                                                       id2=2)
+        self.assertEqual(request.method, "get")
+
+    def test_specified_method_used(self):
+        request = self.resource.get_extra_view_request("ingredients", id1=1,
+                                                       id2=2)
+        self.assertEqual(request.method, "put")
 
 
 class PluralNameResourceTestCase(unittest.TestCase):
