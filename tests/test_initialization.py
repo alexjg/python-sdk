@@ -1,7 +1,8 @@
 import unittest
 from kazoo import Client
 from kazoo.request_objects import UsernamePasswordAuthRequest,\
-        ApiKeyAuthRequest
+    ApiKeyAuthRequest
+
 
 class ConstructorRequiredArgumentsTestCase(unittest.TestCase):
 
@@ -23,25 +24,30 @@ class ConstructorRequiredArgumentsTestCase(unittest.TestCase):
         self.assert_invalid_constructor_args(account_name="sdfasd")
 
     def test_without_password_raises(self):
-        self.assert_invalid_constructor_args(username="su", account_name="Dfasdf")
+        self.assert_invalid_constructor_args(username="su",
+                                             account_name="Dfasdf")
 
     def test_without_account_name_raises(self):
-        self.assert_invalid_constructor_args(username="asdfas", password="sdfasd")
+        self.assert_invalid_constructor_args(username="asdfas",
+                                             password="sdfasd")
 
     def test_without_username_raises(self):
-        self.assert_invalid_constructor_args(account_name="dafas", password="|asdfa")
+        self.assert_invalid_constructor_args(account_name="dafas",
+                                             password="|asdfa")
 
     def test_with_api_key_does_not_raise(self):
         client = Client(api_key="sometoken")
 
     def test_with_valid_username_creds_does_not_raise(self):
-        client = Client(account_name="user", password="pass", username="username")
+        client = Client(account_name="user", password="pass",
+                        username="username")
 
     def test_with_username_and_password_creates_user_auth_request(self):
-        client = Client(account_name="user", password="pass", username="someusername")
-        self.assertEqual(type(client.auth_request), UsernamePasswordAuthRequest)
+        client = Client(account_name="user", password="pass",
+                        username="someusername")
+        self.assertEqual(type(client.auth_request),
+                         UsernamePasswordAuthRequest)
 
     def test_with_token_creates_api_key_auth_request(self):
         client = Client(api_key="fhasdlkjfblkasd")
         self.assertEqual(type(client.auth_request), ApiKeyAuthRequest)
-

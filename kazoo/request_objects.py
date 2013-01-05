@@ -8,6 +8,7 @@ import requests
 
 logger = logging.getLogger(__name__)
 
+
 class KazooRequest(object):
     http_methods = ["get", "post", "put", "delete"]
 
@@ -27,16 +28,17 @@ class KazooRequest(object):
         return param_names
 
     def _get_headers(self, token=None):
-        headers = {"Content-Type":"application/json"}
+        headers = {"Content-Type": "application/json"}
         if self.auth_required:
             headers["X-Auth-Token"] = token
         return headers
 
-
     def execute(self, base_url, method=None, data=None, token=None, **kwargs):
         if self.auth_required and token is None:
-            raise exceptions.AuthenticationRequiredError("This method requires "
-                                                         "an auth token")
+            error_message = ("This method requires an auth token, be sure to "
+                             "call client.authenticate() before making API "
+                             "calls")
+            raise exceptions.AuthenticationRequiredError(error_message)
         if method is None:
             method = self.method
         if method.lower() not in self.http_methods:
@@ -49,11 +51,13 @@ class KazooRequest(object):
                     param_name))
         subbed_path = self.path.format(**kwargs)
         full_url = base_url + subbed_path
-        logger.debug("Making {0} request to url {1}".format(method, full_url.encode("utf-8")))
+        logger.debug("Making {0} request to url {1}".
+                     format(method, full_url.encode("utf-8")))
         headers = self._get_headers(token=token)
         req_func = getattr(requests, method)
         if data:
-            raw_response = req_func(full_url, data=json.dumps({"data": data}), headers=headers)
+            raw_response = req_func(full_url, data=json.dumps({"data": data}),
+                                    headers=headers)
         else:
             raw_response = req_func(full_url, headers=headers)
         if raw_response.status_code == 500:
@@ -71,7 +75,6 @@ class KazooRequest(object):
         raise exceptions.KazooApiError(error_data["message"])
 
 
-
 class UsernamePasswordAuthRequest(KazooRequest):
 
     def __init__(self, username, password, account_name):
@@ -86,7 +89,9 @@ class UsernamePasswordAuthRequest(KazooRequest):
             "credentials": self._get_hashed_credentials(),
             "account_name": self.account_name,
         }
-        return super(UsernamePasswordAuthRequest, self).execute(base_url, method="put", data=data)
+        return super(UsernamePasswordAuthRequest, self).execute(base_url,
+                                                                method="put",
+                                                                data=data)
 
     def _get_hashed_credentials(self):
         m = hashlib.md5()
@@ -105,6 +110,5 @@ class ApiKeyAuthRequest(KazooRequest):
         data = {
             "api_key": self.api_key
         }
-        return super(ApiKeyAuthRequest, self).execute(base_url, data=data, method="put")
-
-
+        return super(ApiKeyAuthRequest, self).execute(base_url, data=data,
+                                                      method="put")

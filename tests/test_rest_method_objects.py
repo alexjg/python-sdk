@@ -3,11 +3,13 @@ from kazoo import rest_resources
 import mock
 import unittest
 
+
 class RestResourceTestCase(unittest.TestCase):
 
     def setUp(self):
         self.path = "/{argument1}/subresource/{argument2}"
-        self.resource = RestResource("subresource", "/{argument1}/subresource/{argument2}")
+        self.resource = RestResource(
+            "subresource", "/{argument1}/subresource/{argument2}")
 
     def test_resource_generates_required_args_for_all_but_last(self):
         self.assertEqual(self.resource.required_args, ["argument1"])
@@ -36,12 +38,14 @@ class RestResourceTestCase(unittest.TestCase):
         self.assertEqual(request.path, "/1/subresource/2")
 
     def test_update_resource_correct_url_and_method(self):
-        request = self.resource.get_update_object_request(argument1=1, argument2=2)
+        request = self.resource.get_update_object_request(argument1=1,
+                                                          argument2=2)
         self.assertEqual(request.path, "/1/subresource/2")
         self.assertEqual(request.method, 'post')
 
     def test_delete_resource_correct_url_and_method(self):
-        request = self.resource.get_delete_object_request(argument1=1, argument2=2)
+        request = self.resource.get_delete_object_request(argument1=1,
+                                                          argument2=2)
         self.assertEqual(request.path, "/1/subresource/2")
         self.assertEqual(request.method, 'delete')
 
@@ -50,16 +54,18 @@ class RestResourceTestCase(unittest.TestCase):
         self.assertEqual(request.path, "/1/subresource")
         self.assertEqual(request.method, 'put')
 
+
 class ExtraViewsResourceTestCase(unittest.TestCase):
 
     def setUp(self):
         self.resource = RestResource(
             "somresource",
             "/{id1}/somesubresource/{id2}",
-            extra_views = [
-                {"path":"status", "name": "all_devices_status"},
+            extra_views=[
+                {"path": "status", "name":  "all_devices_status"},
                 "missing",
-                {"path":"children", "name":"subresource_children", "scope":"object"}]
+                {"path": "children", "name": "subresource_children",
+                 "scope": "object"}]
         )
 
     def test_extra_view_returns_correct_url(self):
@@ -67,7 +73,8 @@ class ExtraViewsResourceTestCase(unittest.TestCase):
         self.assertEqual(request.path, "/1/somesubresource/status")
 
     def test_extra_view_with_object_scope_returns_correct_url(self):
-        request = self.resource.get_extra_view_request("children", id1=1, id2=2)
+        request = self.resource.get_extra_view_request("children", id1=1,
+                                                       id2=2)
         self.assertEqual(request.path, "/1/somesubresource/2/children")
 
     def test_extra_views_described_by_dictionary(self):
@@ -107,9 +114,6 @@ class PluralNameResourceTestCase(unittest.TestCase):
 class AvailableMethodsResourceTestCase(unittest.TestCase):
 
     def test_excludes_resource(self):
-        resource = RestResource("subresource", "/{oneid}/someplace", exclude_methods=["list", "detail"])
+        resource = RestResource("subresource", "/{oneid}/someplace",
+                                exclude_methods=["list", "detail"])
         self.assertEqual(resource.methods, ["create", "update", "delete"])
-
-
-
-

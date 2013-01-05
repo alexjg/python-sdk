@@ -2,6 +2,7 @@ import mock
 import unittest
 from kazoo import Client
 
+
 class AuthenticationTestCase(unittest.TestCase):
 
     def test_authentication_sets_auth_token(self):

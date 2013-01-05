@@ -1,7 +1,8 @@
 from kazoo.request_objects import KazooRequest
 import re
 
-method_types = ["detail","list","update","create","delete"]
+method_types = ["detail", "list", "update", "create", "delete"]
+
 
 class RestResource(object):
 
@@ -50,7 +51,7 @@ class RestResource(object):
             if hasattr(view_desc, "has_key"):
                 result = view_desc
             else:
-                result = {"name":"get_" + view_desc,"path":view_desc}
+                result = {"name": "get_" + view_desc, "path": view_desc}
             if "scope" not in result:
                 result["scope"] = "aggregate"
             self.extra_views.append(result)
