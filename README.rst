@@ -54,5 +54,28 @@ the returned JSON object, for example: ::
      u'revision': u'3-c16dd0a629fe1da254fe1e7b3e5fb35a',
      u'status': u'success'}
 
+For each resource exposed by the kazoo api there are corresponding methods
+on the client. For example, for the 'callflows' resource the
+correspondence is as follows.
 
-You can see a list of available methods at: https://kazoo-api.readthedocs.org/en/latest/
+    GET /accounts/{account_id}/callflows -> client.get_callflows(acct_id)
+    GET /accounts/{account_id}/callflows/{callflow_id} -> client.get_callflow(acct_id, callflow_id)
+    PUT /accounts/{account_id}/callflows/ -> client.create_callflow(acct_id, data)
+    POST /account/{account_id}/callflows/{callflow_id} -> client.update_callflow(acct_id, data)
+    DELETE /account/{account_id}/callflows/{callflow_id} -> client.delete_callflow(acct_id, callflow_id)
+
+Some resources do not have all methods available, in which case they are
+not present on the client.
+
+There are also some resources which don't quite fit this paradigm, they are:
+
+    GET /accounts/{account_id}/children -> client.get_account_children(acct_id)
+    GET /accounts/{account_id}/descendants -> client.get_account_descendants(acct_id)
+    GET /accounts/{account_id}/devices/status -> client.get_all_devices_status(acct_id)
+    GET /accounts/{account_id}/servers/{server_id}/deployment -> client.get_deployment(acct_id, server_id)
+    GET /accounts/{account_id}/users/hotdesk -> client.get_hotdesk(acct_id)
+
+The kazoo Rest API documentation is available at https://2600hz.atlassian.net/wiki/display/docs/Configuration+APIs
+You can see a list of available client methods at: https://kazoo-api.readthedocs.org/en/latest/
+
+
