@@ -17,6 +17,16 @@ class RestResource(object):
         self.path = self._get_resource_path(path)
         self._initialize_extra_view_descriptions(extra_views)
         self._initialize_methods(methods, exclude_methods)
+        self._initialize_method_names()
+
+    def _initialize_method_names(self):
+        self.method_names = {
+            "list": "get_{0}".format(self.plural_name),
+            "object": "get_{0}".format(self.name),
+            "update": "update_{0}".format(self.name),
+            "create": "create_{0}".format(self.name),
+            "delete": "delete_{0}".format(self.name),
+        }
 
     def _initialize_methods(self, methods, exclude_methods):
         self.methods = list(set(methods) - set(exclude_methods))

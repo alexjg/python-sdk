@@ -76,6 +76,7 @@ There are also some resources which don't quite fit this paradigm, they are:
     GET /accounts/{account_id}/users/hotdesk -> client.get_hotdesk(acct_id)
 
 The kazoo Rest API documentation is available at https://2600hz.atlassian.net/wiki/display/docs/Configuration+APIs
+
 You can see a list of available client methods at: https://kazoo-api.readthedocs.org/en/latest/
 
 

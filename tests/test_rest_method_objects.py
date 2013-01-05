@@ -1,6 +1,4 @@
 from kazoo.rest_resources import RestResource
-from kazoo import rest_resources
-import mock
 import unittest
 
 
@@ -110,6 +108,18 @@ class PluralNameResourceTestCase(unittest.TestCase):
                                 plural_name="subresourcae")
         self.assertEqual(resource.plural_name, "subresourcae")
 
+
+class RestResourceMethodNameTestCase(unittest.TestCase):
+
+    def test_resource_names_for_default_method_names(self):
+        resource = RestResource("someresource", "/someplace/{resource_id}")
+        method_names = resource.method_names
+        expected_names = {"list": "get_someresources",
+                          "object": "get_someresource",
+                          "update": "update_someresource",
+                          "create": "create_someresource",
+                          "delete": "delete_someresource"}
+        self.assertEqual(expected_names, method_names)
 
 class AvailableMethodsResourceTestCase(unittest.TestCase):
 
