@@ -56,7 +56,7 @@ the returned JSON object, for example: ::
 
 For each resource exposed by the kazoo api there are corresponding methods
 on the client. For example, for the 'callflows' resource the
-correspondence is as follows.
+correspondence is as follows. ::
 
     GET /accounts/{account_id}/callflows -> client.get_callflows(acct_id)
     GET /accounts/{account_id}/callflows/{callflow_id} -> client.get_callflow(acct_id, callflow_id)
@@ -67,8 +67,9 @@ correspondence is as follows.
 Some resources do not have all methods available, in which case they are
 not present on the client.
 
-There are also some resources which don't quite fit this paradigm, they are:
+There are also some resources which don't quite fit this paradigm, they are: ::
 
+    GET /accounts/{account_id}/media -> client.get_all_media(acct_id)
     GET /accounts/{account_id}/children -> client.get_account_children(acct_id)
     GET /accounts/{account_id}/descendants -> client.get_account_descendants(acct_id)
     GET /accounts/{account_id}/devices/status -> client.get_all_devices_status(acct_id)

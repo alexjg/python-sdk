@@ -144,10 +144,15 @@ class Client(object):
     This class should be initialized either with a username, password and
     account name combination, or with an API key. Once you have initialized
     the client you will need to call :meth:`authenticate()` before you can
-    begin making API calls.
+    begin making API calls. ::
 
         >>>import kazoo
         >>>client = kazoo.Client(api_key="sdfasdfas")
+        >>>client.authenticate()
+
+    You can also initialize with a username and password combination: ::
+
+        >>>client = kazoo.Client(username="myusername", password="mypassword", account_name="my_account_name")
         >>>client.authenticate()
 
     API calls which require data take it in the form of a required argument
@@ -185,7 +190,7 @@ class Client(object):
 
     For each resource exposed by the kazoo api there are corresponding methods
     on the client. For example, for the 'callflows' resource the
-    correspondence is as follows.
+    correspondence is as follows. ::
 
         GET /accounts/{account_id}/callflows -> client.get_callflows(acct_id)
         GET /accounts/{account_id}/callflows/{callflow_id} -> client.get_callflow(acct_id, callflow_id)
@@ -196,8 +201,9 @@ class Client(object):
     Some resources do not have all methods available, in which case they are
     not present on the client.
 
-    There are also some resources which don't quite fit this paradigm, they are:
+    There are also some resources which don't quite fit this paradigm, they are: ::
 
+        GET /accounts/{account_id}/media -> client.get_all_media(acct_id)
         GET /accounts/{account_id}/children -> client.get_account_children(acct_id)
         GET /accounts/{account_id}/descendants -> client.get_account_descendants(acct_id)
         GET /accounts/{account_id}/devices/status -> client.get_all_devices_status(acct_id)
