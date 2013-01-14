@@ -5,6 +5,7 @@ import hashlib
 import logging
 import re
 import requests
+import urllib
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 class KazooRequest(object):
     http_methods = ["get", "post", "put", "delete"]
 
-    def __init__(self, path, auth_required=True, method='get'):
+    def __init__(self, path, auth_required=True, method='get', get_params=None):
         """An object which takes a path and determines required
         parameters from it, these parameters must be passed to the execute
         method of the object
@@ -21,6 +22,7 @@ class KazooRequest(object):
         self._required_param_names = self._get_params_from_path(self.path)
         self.auth_required = auth_required
         self.method = method
+        self.get_params = get_params
 
     def _get_params_from_path(self, path):
         param_regex = re.compile("{([a-zA-Z0-9_]+)}")
@@ -32,6 +34,15 @@ class KazooRequest(object):
         if self.auth_required:
             headers["X-Auth-Token"] = token
         return headers
+
+    def _get_url(self, params, base_url):
+        url = base_url + self._get_url_with_variables_replaced(params)
+        if self.get_params:
+            return url + "?" + urllib.urlencode(self.get_params)
+        return url
+
+    def _get_url_with_variables_replaced(self, params):
+        return self.path.format(**params)
 
     def execute(self, base_url, method=None, data=None, token=None, **kwargs):
         if self.auth_required and token is None:
@@ -49,8 +60,7 @@ class KazooRequest(object):
             if param_name not in kwargs:
                 raise ValueError("keyword argument {0} is required".format(
                     param_name))
-        subbed_path = self.path.format(**kwargs)
-        full_url = base_url + subbed_path
+        full_url = self._get_url(kwargs, base_url)
         logger.debug("Making {0} request to url {1}".
                      format(method, full_url.encode("utf-8")))
         headers = self._get_headers(token=token)

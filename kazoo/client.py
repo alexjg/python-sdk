@@ -290,7 +290,8 @@ class Client(object):
         extra_views=[{"name": "get_hotdesk", "path": "hotdesk"}])
     _vmbox_resource = RestResource(
         "voicemail_box",
-        "/accounts/{account_id}/vmboxes/{vmbox_id}")
+        "/accounts/{account_id}/vmboxes/{vmbox_id}",
+        plural_name="voicemail_boxes")
 
     def __init__(self, api_key=None, password=None, account_name=None,
                  username=None):

@@ -14,7 +14,6 @@ class RequestTestCase(unittest.TestCase):
         mock_request.assert_called_with(mock.ANY, headers=mock.ANY,
                                         data=json.dumps(expected_wrapper))
 
-
 class RequestObjectParameterTestCase(RequestTestCase):
 
     def setUp(self):
@@ -141,6 +140,24 @@ class RequestObjectErrorHandling(RequestTestCase):
             with self.assertRaises(exceptions.KazooApiBadDataError) as cm:
                 req_obj.execute("http://testserver.com")
             self.assertTrue("realm" in cm.exception.field_errors)
+
+
+class GetParametersTestCase(RequestTestCase):
+
+    def test_get_parameters_added_to_url(self):
+        request = KazooRequest("/somepath", auth_required=False,
+                               get_params={"one":1, "two":2})
+        with mock.patch('requests.get') as mock_get:
+            mock_response = mock.Mock()
+            mock_response.status_code = 200
+            mock_response.json = {"result":"fake", "status":"success"}
+            mock_get.return_value = mock_response
+            request.execute("http://testserver.com")
+            mock_get.assert_called_with(
+                "http://testserver.com/somepath?two=2&one=1",
+                headers=mock.ANY
+            )
+
 
 
 class UsernamePasswordAuthRequestTestCase(RequestTestCase):
