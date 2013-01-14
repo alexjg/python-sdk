@@ -263,7 +263,7 @@ class Client(object):
                                    "/accounts/{account_id}/menus/{menu_id}")
     _phone_number_resource = RestResource(
         "phone_number",
-        "/accounts/{account_id}/phone_numbers/{phone_number_id}",
+        "/accounts/{account_id}/phone_numbers/{phone_number}",
         methods=["list", "update", "delete"])
     _queues_resource = RestResource("queue",
                                     "/accounts/{account_id}/queues/{queue_id}")
@@ -329,3 +329,17 @@ class Client(object):
         if request.auth_required:
             kwargs["token"] = self.auth_token
         return request.execute(self.BASE_URL, **kwargs)
+
+    def search_phone_numbers(self, prefix, quantity=10):
+        request = KazooRequest("/phone_numbers", get_params={
+            "prefix": prefix,
+            "quantity": quantity
+        })
+        return self._execute_request(request)
+
+    def create_phone_number(self, acct_id, phone_number):
+        request = KazooRequest("/accounts/{account_id}/phone_numbers/{phone_number}",
+                               method="put")
+        return self._execute_request(request,
+                                     account_id=acct_id, phone_number=phone_number)
+

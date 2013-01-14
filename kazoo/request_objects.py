@@ -82,7 +82,9 @@ class KazooRequest(object):
     def _handle_error(self, error_data):
         if error_data["error"] == "400" and ("data" in error_data):
             raise exceptions.KazooApiBadDataError(error_data["data"])
-        raise exceptions.KazooApiError(error_data["message"])
+        raise exceptions.KazooApiError("There was an error caling the kazoo api, "
+                                       "the error was {0}".format(
+                                           error_data["message"]))
 
 
 class UsernamePasswordAuthRequest(KazooRequest):
