@@ -264,7 +264,11 @@ class Client(object):
     _phone_number_resource = RestResource(
         "phone_number",
         "/accounts/{account_id}/phone_numbers/{phone_number}",
-        methods=["list", "update", "delete"])
+        methods=["list", "update", "delete"],
+        extra_views=[
+            {"name":"activate_phone_number",
+             "path": "activate",
+             "scope": "object"}])
     _queues_resource = RestResource("queue",
                                     "/accounts/{account_id}/queues/{queue_id}")
     _server_resource = RestResource(

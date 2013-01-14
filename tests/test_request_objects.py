@@ -118,7 +118,9 @@ class RequestObjectErrorHandling(RequestTestCase):
             with self.assertRaises(exceptions.KazooApiError) as cm:
                 req_obj.execute("http://testserver")
             self.assertEqual(cm.exception.message,
-                             self.error_response["message"])
+                             "There was an error caling the kazoo api, "
+                             "the error was {0}".format(
+                                 self.error_response["message"]))
 
     def test_internal_server_error(self):
         req_obj = KazooRequest("/somepath", auth_required=False)

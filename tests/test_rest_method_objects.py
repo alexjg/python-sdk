@@ -162,3 +162,14 @@ class AvailableMethodsResourceTestCase(unittest.TestCase):
         resource = RestResource("subresource", "/{oneid}/someplace",
                                 exclude_methods=["list", "detail"])
         self.assertEqual(resource.methods, ["create", "update", "delete"])
+
+
+class ResourcePathTestCase(unittest.TestCase):
+
+    def test_resource_path_calculated_correctly(self):
+        # Catch a bug where the url /accounts/{account_id}/phone_numbers/{phone_number}
+        # was parsing incorrectly
+        resource = RestResource("phone_numbers",
+                                "/accounts/{account_id}/phone_numbers/{phone_number}")
+        self.assertEqual(resource.path,
+                         "/accounts/{account_id}/phone_numbers")

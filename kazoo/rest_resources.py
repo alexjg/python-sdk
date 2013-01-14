@@ -34,7 +34,7 @@ class RestResource(object):
         self.methods = list(set(methods) - set(exclude_methods))
 
     def _get_resource_path(self, path):
-        return path[:path.find(self.object_arg) - 2]
+        return path[:path.rfind("{") - 1]
 
     def _check_at_least_one_argument(self, path):
         if len(self._get_params(path)) == 0:
