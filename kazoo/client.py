@@ -268,7 +268,17 @@ class Client(object):
         extra_views=[
             {"name":"activate_phone_number",
              "path": "activate",
+             "scope": "object"},
+            {"name": "reserve_phone_number",
+             "path": "reserve",
+             "scope": "object"},
+            {"name": "add_port_in_number",
+             "path": "port",
              "scope": "object"}])
+    #_phone_number_files_resource = RestResource(
+        #"/accounts/{account_id}/phone_numbers/{phone_number}/docs/{filename}",
+        #"phone_number_file",
+        #methods=["delete"])
     _queues_resource = RestResource("queue",
                                     "/accounts/{account_id}/queues/{queue_id}")
     _server_resource = RestResource(
@@ -346,4 +356,9 @@ class Client(object):
                                method="put")
         return self._execute_request(request,
                                      account_id=acct_id, phone_number=phone_number)
+
+    def upload_phone_number_file(self, acct_id, phone_number, filename, file_obj):
+        request = Kazoorequest("/accounts/{account_id}/phone_numbers/{phone_number}",
+                               method="post")
+
 

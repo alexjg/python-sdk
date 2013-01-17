@@ -44,7 +44,7 @@ class KazooRequest(object):
     def _get_url_with_variables_replaced(self, params):
         return self.path.format(**params)
 
-    def execute(self, base_url, method=None, data=None, token=None, **kwargs):
+    def execute(self, base_url, method=None, data=None, token=None, files=None, **kwargs):
         if self.auth_required and token is None:
             error_message = ("This method requires an auth token, be sure to "
                              "call client.authenticate() before making API "
@@ -65,11 +65,12 @@ class KazooRequest(object):
                      format(method, full_url.encode("utf-8")))
         headers = self._get_headers(token=token)
         req_func = getattr(requests, method)
+        kwargs = {}
         if data:
-            raw_response = req_func(full_url, data=json.dumps({"data": data}),
-                                    headers=headers)
-        else:
-            raw_response = req_func(full_url, headers=headers)
+            kwargs["data"] = json.dumps({"data": data})
+        if files:
+            kwargs["files"] = files
+        raw_response = req_func(full_url, headers=headers, **kwargs)
         if raw_response.status_code == 500:
             raise exceptions.KazooApiError("Internal Server Error")
         response = raw_response.json
