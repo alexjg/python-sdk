@@ -117,19 +117,20 @@ class RequestObjectErrorHandling(RequestTestCase):
             mock_get.return_value = mock_response
             with self.assertRaises(exceptions.KazooApiError) as cm:
                 req_obj.execute("http://testserver")
-            self.assertEqual(cm.exception.message,
-                             "There was an error calling the kazoo api, "
-                             "the error was {0}".format(
-                                 self.error_response["message"]))
+            expected_errors = "the error was {0}".format(
+                                   self.error_response["message"])
+            self.assertTrue(expected_errors in cm.exception.message)
 
     def test_internal_server_error(self):
         req_obj = KazooRequest("/somepath", auth_required=False)
         with mock.patch('requests.get') as mock_get:
             mock_response = mock.Mock()
             mock_response.status_code = 500
+            mock_response.headers = {"X-Request-Id": "sdfaskldfjaosdf"}
             mock_get.return_value = mock_response
             with self.assertRaises(exceptions.KazooApiError) as cm:
                 req_obj.execute("http://testserver")
+            self.assertTrue("Request ID" in cm.exception.message)
 
     def test_invalid_data_displays_invalid_field_data(self):
         req_obj = KazooRequest("/somepath", auth_required=False)
