@@ -291,7 +291,7 @@ class Client(object):
     _users_resource = RestResource(
         "user",
         "/accounts/{account_id}/users/{user_id}",
-        extra_views=[{"name": "get_hotdesk", "path": "hotdesk"}])
+        extra_views=[{"name": "get_hotdesk", "path": "hotdesks"}])
     _vmbox_resource = RestResource(
         "voicemail_box",
         "/accounts/{account_id}/vmboxes/{vmbox_id}",
@@ -324,8 +324,8 @@ class Client(object):
         which will be automatically used for all further requests
         """
         if not self._authenticated:
-            self.auth_token = self.auth_request.execute(
-                self.BASE_URL)["auth_token"]
+            self.auth_data = self.auth_request.execute(self.BASE_URL)
+            self.auth_token = self.auth_data["auth_token"]
             self._authenticated = True
         return self.auth_token
 
