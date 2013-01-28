@@ -268,13 +268,16 @@ class Client(object):
         extra_views=[
             {"name":"activate_phone_number",
              "path": "activate",
-             "scope": "object"},
+             "scope": "object",
+             "method": "put"},
             {"name": "reserve_phone_number",
              "path": "reserve",
-             "scope": "object"},
+             "scope": "object",
+             "method": "put"},
             {"name": "add_port_in_number",
              "path": "port",
-             "scope": "object"}])
+             "scope": "object",
+             "method": "put"}])
     #_phone_number_files_resource = RestResource(
         #"/accounts/{account_id}/phone_numbers/{phone_number}/docs/{filename}",
         #"phone_number_file",
@@ -306,6 +309,11 @@ class Client(object):
         "voicemail_box",
         "/accounts/{account_id}/vmboxes/{vmbox_id}",
         plural_name="voicemail_boxes")
+    _phone_number_docs_resource = RestResource(
+        "phone_number_doc",
+        "/accounts/{account_id}/phone_numbers/{phone_number}/docs/{filename}",
+        methods=["delete"],
+    )
 
     def __init__(self, api_key=None, password=None, account_name=None,
                  username=None):
@@ -358,7 +366,7 @@ class Client(object):
                                      account_id=acct_id, phone_number=phone_number)
 
     def upload_phone_number_file(self, acct_id, phone_number, filename, file_obj):
-        request = Kazoorequest("/accounts/{account_id}/phone_numbers/{phone_number}",
+        """Uploads a file like object as part of a phone numbers documents"""
+        request = KazooRequest("/accounts/{account_id}/phone_numbers/{phone_number}",
                                method="post")
-
-
+        return self._execute_request(request, files={filename: file_obj})

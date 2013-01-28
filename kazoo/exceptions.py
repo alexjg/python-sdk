@@ -1,5 +1,4 @@
 
-
 class InvalidConfigurationError(RuntimeError):
     pass
 
