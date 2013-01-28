@@ -278,10 +278,6 @@ class Client(object):
              "path": "port",
              "scope": "object",
              "method": "put"}])
-    #_phone_number_files_resource = RestResource(
-        #"/accounts/{account_id}/phone_numbers/{phone_number}/docs/{filename}",
-        #"phone_number_file",
-        #methods=["delete"])
     _queues_resource = RestResource("queue",
                                     "/accounts/{account_id}/queues/{queue_id}")
     _server_resource = RestResource(
