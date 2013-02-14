@@ -121,16 +121,32 @@ class RequestObjectErrorHandling(RequestTestCase):
                                    self.error_response["message"])
             self.assertTrue(expected_errors in cm.exception.message)
 
-    def test_internal_server_error(self):
+    def test_internal_server_error_unparseable(self):
         req_obj = KazooRequest("/somepath", auth_required=False)
         with mock.patch('requests.get') as mock_get:
             mock_response = mock.Mock()
             mock_response.status_code = 500
             mock_response.headers = {"X-Request-Id": "sdfaskldfjaosdf"}
+            mock_response.json = None
             mock_get.return_value = mock_response
             with self.assertRaises(exceptions.KazooApiError) as cm:
                 req_obj.execute("http://testserver")
             self.assertTrue("Request ID" in cm.exception.message)
+
+    def test_internal_server_error_has_error_message_if_parseable(self):
+        req_obj = KazooRequest("/somepath", auth_required=False)
+        with mock.patch('requests.get') as mock_get:
+            mock_response = mock.Mock()
+            mock_response.status_code = 500
+            mock_response.headers = {"X-Request-Id": "sdfaskldfjaosdf"}
+            mock_response.json = utils.load_fixture_as_dict(
+                "bad_billing_status_response.json")
+            mock_get.return_value = mock_response
+            with self.assertRaises(exceptions.KazooApiError) as cm:
+                req_obj.execute("http://testserver")
+            ex = cm.exception
+            self.assertTrue("Unable to continue due to billing" in ex.message)
+
 
     def test_invalid_data_displays_invalid_field_data(self):
         req_obj = KazooRequest("/somepath", auth_required=False)

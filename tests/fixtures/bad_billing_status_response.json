@@ -1,0 +1,9 @@
+{
+    "auth_token": "6dc29b060e9aa03f58501cb57068a27",
+    "request_id": "420d47706e945720a951d2b1d0793cb1",
+    "status": "error",
+    "message": "no_payment_token",
+    "error": "500",
+    "data": "Unable to continue due to billing account 646637e16ee7de87ae617e6581a20c54 status"
+
+}

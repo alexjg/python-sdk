@@ -72,8 +72,7 @@ class KazooRequest(object):
             kwargs["files"] = files
         raw_response = req_func(full_url, headers=headers, **kwargs)
         if raw_response.status_code == 500:
-            request_id = raw_response.headers["X-Request-Id"]
-            raise exceptions.KazooApiError("Internal Server Error, Request ID was {0}".format(request_id))
+            self._handle_500_error(raw_response)
         response = raw_response.json
         if response["status"] == "error":
             logger.debug("There was an error, full error text is: {0}".format(
@@ -90,6 +89,17 @@ class KazooRequest(object):
                                            error_data["message"],
                                            error_data["request_id"],
                                        ))
+
+    def _handle_500_error(self, raw_response):
+        request_id = raw_response.headers["X-Request-Id"]
+        if raw_response.json:
+            message = raw_response.json["data"]
+        else:
+            message = "There was no error message"
+        raise exceptions.KazooApiError("Internal Server Error, "
+                                       "Request ID was {0}"
+                                       " message was {1}".format(
+                                           request_id, message))
 
 
 class UsernamePasswordAuthRequest(KazooRequest):
