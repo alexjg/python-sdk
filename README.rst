@@ -1,3 +1,7 @@
+
+THIS CODE IS NOW MAINTAINED BY 2600hz https://github.com/2600hz/python-sdk
+
+
 Installing
 ==========
 
